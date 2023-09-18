@@ -92,10 +92,9 @@ const int     key_menu_escape = KEYD_START;                                     
 const int     key_menu_enter = KEYD_A;                                      // phares 3/7/98
 const int     key_strafeleft = KEYD_L;
 const int     key_straferight = KEYD_R;
-//Match Doom II GBA retail controls ~ Kippykip
-const int     key_fire = KEYD_B; 
-const int     key_use = KEYD_A;
-const int     key_speed = KEYD_A;
+const int     key_fire = KEYD_A; 
+const int     key_use = KEYD_B;
+const int     key_speed = KEYD_B;
 const int     key_escape = KEYD_START;                           // phares 4/13/98
 const int     key_enter = KEYD_A;
 const int     key_map_right = KEYD_RIGHT;
@@ -236,16 +235,16 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     //
     // killough 3/26/98, 4/2/98: fix autoswitch when no weapons are left
 
-    if(_g->gamekeydown[key_use] && _g->gamekeydown[key_straferight])
+      if(_g->gamekeydown[key_strafeleft] && _g->gamekeydown[key_straferight] && _g->gamekeydown[key_up])
     {
         newweapon = P_WeaponCycleUp(&_g->player);
-        side -= sidemove[speed]; //Hack cancel strafe.
+        forward -= forwardmove[speed]; //Hack cancel strafe.
     }
 
-    else if(_g->gamekeydown[key_use] && _g->gamekeydown[key_strafeleft])
+     else if(_g->gamekeydown[key_strafeleft] && _g->gamekeydown[key_straferight] && _g->gamekeydown[key_down])
     {
         newweapon = P_WeaponCycleDown(&_g->player);
-        side += sidemove[speed]; //Hack cancel strafe.
+        forward += forwardmove[speed]; //Hack cancel strafe.
     }
     else if ((_g->player.attackdown && !P_CheckAmmo(&_g->player)))
         newweapon = P_SwitchWeapon(&_g->player);           // phares
