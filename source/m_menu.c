@@ -984,7 +984,7 @@ boolean M_Responder (event_t* ev)
     }
 
 	//Allow being able to go back in menus ~Kippykip
-	if (ch == key_fire)                           // phares 3/7/98
+	if (ch == key_use)                           // phares 3/7/98
     {
 		//If the prevMenu == NULL (Such as main menu screen), then just get out of the menu altogether
 		if(_g->currentMenu->prevMenu == NULL)
