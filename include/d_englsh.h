@@ -77,7 +77,7 @@
 #define ENDGAME     "are you sure you want to\nend the game?\n\n"PRESSYN
 #define RESTARTLEVEL "restart the level?\n\n"PRESSYN
 
-#define DOSY        "(press y to quit)"
+#define DOSY        "(press A to quit)"
 
 #define DETAILHI    "High detail"
 #define DETAILLO    "Low detail"
@@ -123,8 +123,8 @@
 #define GOTCELL     "Picked up an energy cell."
 #define GOTCELLBOX  "Picked up an energy cell pack."
 #define GOTSHELLS   "Picked up 4 shotgun shells."
-#define GOTSHELLBOX "Picked up a box of shotgun shells."
-#define GOTBACKPACK "Picked up a backpack full of ammo!"
+#define GOTSHELLBOX "Got a box of shotgun shells."
+#define GOTBACKPACK "Got a backpack full of ammo!"
 
 #define GOTBFG9000  "You got the BFG9000!  Oh, yes."
 #define GOTCHAINGUN "You got the chaingun!"
@@ -135,22 +135,22 @@
 #define GOTSHOTGUN2 "You got the super shotgun!"
 
 /* p_doors.c */
-#define PD_BLUEO    "You need a blue key to activate this object"
-#define PD_REDO     "You need a red key to activate this object"
-#define PD_YELLOWO  "You need a yellow key to activate this object"
-#define PD_BLUEK    "You need a blue key to open this door"
-#define PD_REDK     "You need a red key to open this door"
-#define PD_YELLOWK  "You need a yellow key to open this door"
+#define PD_BLUEO    "Get a blue key to use this."
+#define PD_REDO     "Get a red key to use this."
+#define PD_YELLOWO  "Get a yellow key to use this."
+#define PD_BLUEK    "Get a blue key to unlock this."
+#define PD_REDK     "Get a red key to unlock this."
+#define PD_YELLOWK  "Get a yellow key to unlock this."
 /* jff 02/05/98 Create messages specific to card and skull keys */
-#define PD_BLUEC    "You need a blue card to open this door"
-#define PD_REDC     "You need a red card to open this door"
-#define PD_YELLOWC  "You need a yellow card to open this door"
-#define PD_BLUES    "You need a blue skull to open this door"
-#define PD_REDS     "You need a red skull to open this door"
-#define PD_YELLOWS  "You need a yellow skull to open this door"
+#define PD_BLUEC    "Get a blue card to open this."
+#define PD_REDC     "Get a red card to open this."
+#define PD_YELLOWC  "Get a yellow card to open this."
+#define PD_BLUES    "Get a blue skull to open this."
+#define PD_REDS     "Get a red skull to open this."
+#define PD_YELLOWS  "Get a yellow skull to open this."
 #define PD_ANY      "Any key will open this door"
-#define PD_ALL3     "You need all three keys to open this door"
-#define PD_ALL6     "You need all six keys to open this door"
+#define PD_ALL3     "Get all 3 keys to open the door"
+#define PD_ALL6     "Get all 6 keys to open the door"
 
 /* g_game.c */
 #define GGSAVED     "game saved."
