@@ -373,7 +373,7 @@ void I_StopSong(int handle)
 void I_SetMusicVolume(int volume)
 {
 #ifdef GBA
-    int mmvol = volume * 32;
+    int mmvol = volume * 64;
 
     mmSetModuleVolume(mmvol);
 #endif
