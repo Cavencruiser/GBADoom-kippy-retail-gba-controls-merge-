@@ -1839,8 +1839,6 @@ static const byte* R_ComposeColumn(const unsigned int texture, const texture_t* 
     //static int total, misses;
     int colmask;
 
-    if(!highDetail)
-    {
         colmask = 0xfffe;
 
         if(tex->width > 8)
@@ -1852,11 +1850,6 @@ static const byte* R_ComposeColumn(const unsigned int texture, const texture_t* 
             else if (iscale > (2 << FRACBITS))
                 colmask = 0xfffc;
         }
-    }
-    else
-        colmask = 0xffff;
-
-
     const int xc = (texcolumn & colmask) & tex->widthmask;
 
     unsigned int cachekey = FindColumnCacheItem(texture, xc);
