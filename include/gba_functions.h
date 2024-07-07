@@ -6,8 +6,8 @@
 #include "m_fixed.h"
 
 #ifdef GBA
-    #include <gba_systemcalls.h>
-    #include <gba_dma.h>
+    #include <tonc_memdef.h>
+    #include <tonc_memmap.h>
 #endif
 
 
@@ -27,7 +27,10 @@ inline static void BlockCopy(void* dest, const void* src, const unsigned int len
 #ifdef GBA
     const int words = len >> 2;
 
-    DMA3COPY(src, dest, DMA_DST_INC | DMA_SRC_INC | DMA32 | DMA_IMMEDIATE | words)
+    REG_DMA[3].cnt = 0;
+    REG_DMA[3].src = src;
+    REG_DMA[3].dst = dest;
+    REG_DMA[3].cnt = DMA_DST_INC | DMA_SRC_INC | DMA_32NOW | words;
 #else
     memcpy(dest, src, len & 0xfffffffc);
 #endif
@@ -49,7 +52,10 @@ inline static void BlockSet(void* dest, volatile unsigned int val, const unsigne
 #ifdef GBA
     const int words = len >> 2;
 
-    DMA3COPY(&val, dest, DMA_SRC_FIXED | DMA_DST_INC | DMA32 | DMA_IMMEDIATE | words)
+    REG_DMA[3].cnt = 0;
+    REG_DMA[3].src = &val;
+    REG_DMA[3].dst = dest;
+    REG_DMA[3].cnt = DMA_DST_INC | DMA_SRC_FIXED | DMA_32NOW | words;
 #else
     memset(dest, val, len & 0xfffffffc);
 #endif

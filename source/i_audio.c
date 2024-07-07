@@ -65,7 +65,7 @@
 
 #ifdef GBA
 
-#include <gba.h>
+#include <tonc.h>
 #include <maxmod.h>    // Maxmod definitions for GBA
 
 

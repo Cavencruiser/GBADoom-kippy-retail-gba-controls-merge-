@@ -35,7 +35,7 @@
 
 //This is to keep the codesize under control.
 //This whole file needs to fit within IWRAM.
-#pragma GCC optimize ("Os")
+#pragma GCC optimize ("O2")
 
 
 #ifdef HAVE_CONFIG_H

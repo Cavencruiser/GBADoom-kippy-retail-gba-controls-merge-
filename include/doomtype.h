@@ -45,7 +45,12 @@
 #ifdef __cplusplus
 typedef bool boolean;
 #else
+#ifdef GBA
+#include <tonc.h>
+typedef bool boolean;
+#else
 typedef enum {false, true} boolean;
+#endif
 #endif
 typedef unsigned char byte;
 #endif
@@ -97,5 +102,9 @@ enum patch_translation_e {
   VPT_TRANS   = 2, // Translate image via a translation table
   VPT_STRETCH = 4, // Stretch to compensate for high-res
 };
+
+#ifndef DEBUG
+#define printf(...)
+#endif
 
 #endif

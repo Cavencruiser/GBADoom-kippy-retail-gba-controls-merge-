@@ -20,25 +20,11 @@ extern "C"
 
 #include "lprintf.h"
 
-#include <gba.h>
-#include <gba_input.h>
-#include <gba_timers.h>
-
+#include <tonc.h>
 #include <maxmod.h>
 
-#define DCNT_PAGE 0x0010
-
-#define VID_PAGE1 VRAM
-#define VID_PAGE2 0x600A000
-
-#define TM_FREQ_1024 0x0003
-#define TM_ENABLE 0x0080
-#define TM_CASCADE 0x0004
-#define TM_FREQ_1024 0x0003
-#define TM_FREQ_256 0x0002
-
-#define REG_WAITCNT	*((vu16 *)(0x4000204))
-
+#define VID_PAGE1 MEM_VRAM
+#define VID_PAGE2 (MEM_VRAM + 0xA000)
 
 //**************************************************************************************
 
@@ -47,25 +33,28 @@ extern "C"
 //VBlank handler.
 //*******************************************************************************
 
+__attribute__((target("arm")))
 void VBlankCallback()
 {
     mmVBlank();
     mmFrame();
+
+    // Acknowledge interrupt manually.
+    REG_IFBIOS |= IRQ_VBLANK;
+    REG_IF = IRQ_VBLANK;
 }
 
 
 void I_InitScreen_e32()
 {
-    irqInit();
+    // Speed up IRQs by using the VBlank callback as an IRQ directly.
+    irq_init(VBlankCallback);
+    irq_enable(II_VBLANK);
 
-    irqSet( IRQ_VBLANK, VBlankCallback );
-    irqEnable(IRQ_VBLANK);
-
-
-    //Set gamepak wait states and prefetch.
+    // Set gamepak wait states and prefetch.
     REG_WAITCNT = 0x46DA;
 
-    consoleDemoInit();
+    // TODO: TTE init
 
     REG_TM2CNT_L= 65535-1872;     // 1872 ticks = 1/35 secs
     REG_TM2CNT_H = TM_FREQ_256 | TM_ENABLE;       // we're using the 256 cycle timer
@@ -92,9 +81,9 @@ void I_StartWServEvents_e32()
 
 void I_PollWServEvents_e32()
 {
-    scanKeys();
+    key_poll();
 
-    u16 key_down = keysDown();
+    u16 key_down = key_curr_state() & (~key_prev_state());
 
     event_t ev;
 
@@ -161,7 +150,7 @@ void I_PollWServEvents_e32()
         }
     }
 
-    u16 key_up = keysUp();
+    u16 key_up = key_prev_state() & (~key_curr_state());
 
     if(key_up)
     {
@@ -260,7 +249,7 @@ void I_CreateWindow_e32()
 {
 
     //Bit5 = unlocked vram at h-blank.
-    SetMode(MODE_4 | BG2_ENABLE | BIT(5));
+    REG_DISPCNT = DCNT_MODE4 | DCNT_BG2 | DCNT_OAM_HBL;
 
     unsigned short* bb = I_GetBackBuffer();
 
@@ -302,7 +291,7 @@ void I_SetPallete_e32(const byte* pallete)
         unsigned int g = *pallete++;
         unsigned int b = *pallete++;
 
-        pal_ram[i] = RGB5(r >> 3, g >> 3, b >> 3);
+        pal_ram[i] = RGB15(r >> 3, g >> 3, b >> 3);
     }
 }
 
@@ -333,25 +322,34 @@ void I_ProcessKeyEvents()
 
 #define MAX_MESSAGE_SIZE 1024
 
+__attribute__((noreturn))
 void I_Error (const char *error, ...)
 {
-    consoleDemoInit();
+    // TODO: TTE init
 
     char msg[MAX_MESSAGE_SIZE];
 
     va_list v;
     va_start(v, error);
 
-    vsprintf(msg, error, v);
+    vsnprintf(msg, MAX_MESSAGE_SIZE, error, v);
 
     va_end(v);
 
-    printf("%s", msg);
+    // TODO: printf("%s", msg);
 
     while(true)
-    {
         VBlankIntrWait();
-    }
+}
+
+extern "C"
+{
+
+void __assert_func_stub(const char *file, int line, const char *fnct, const char *msg)
+{
+    I_Error(msg);
+}
+
 }
 
 //**************************************************************************************
