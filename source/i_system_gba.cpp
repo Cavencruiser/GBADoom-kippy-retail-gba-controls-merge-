@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <cstring>
+#include <tonc.h>
 
 #ifdef GBA
 
@@ -11,6 +12,7 @@ extern "C"
     #include "d_main.h"
     #include "d_event.h"
 
+    #include "gba_functions.h"
     #include "global_data.h"
 
     #include "tables.h"
@@ -20,7 +22,6 @@ extern "C"
 
 #include "lprintf.h"
 
-#include <tonc.h>
 #include <maxmod.h>
 
 #define VID_PAGE1 MEM_VRAM
@@ -255,13 +256,13 @@ void I_CreateWindow_e32()
 
     unsigned short* bb = I_GetBackBuffer();
 
-    memset(bb, 0, 240*160);
+    BlockSet(bb, 0, 240*160);
 
     I_FinishUpdate_e32(NULL, NULL, 0, 0);
 
     bb = I_GetBackBuffer();
 
-    memset(bb, 0, 240*160);
+    BlockSet(bb, 0, 240*160);
 
     I_FinishUpdate_e32(NULL, NULL, 0, 0);
 

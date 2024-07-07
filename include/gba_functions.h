@@ -53,7 +53,7 @@ inline static void BlockSet(void* dest, volatile unsigned int val, const unsigne
     const int words = len >> 2;
 
     REG_DMA[3].cnt = 0;
-    REG_DMA[3].src = &val;
+    REG_DMA[3].src = (const void*) &val;
     REG_DMA[3].dst = dest;
     REG_DMA[3].cnt = DMA_DST_INC | DMA_SRC_FIXED | DMA_32NOW | words;
 #else
