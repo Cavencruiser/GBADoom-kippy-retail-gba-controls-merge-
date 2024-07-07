@@ -64,7 +64,7 @@ typedef struct
   short   oldnum;
 
   // pointer to current value
-  short*  num;
+  int*    num;
 
   // pointer to boolean stating
   //  whether to update number

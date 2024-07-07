@@ -182,7 +182,6 @@ static void D_Display (void)
     if (_g->gamestate != GS_LEVEL) { // Not a level
         switch (_g->oldgamestate)
         {
-            case -1:
             case GS_LEVEL:
                 V_SetPalette(0); // cph - use default (basic) palette
             default:

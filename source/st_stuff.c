@@ -275,7 +275,7 @@ static void ST_updateFaceWidget(void)
 
 static void ST_updateWidgets(void)
 {
-    const static int  largeammo = 1994; // means "n/a"
+    static int  largeammo = 1994; // means "n/a"
     int         i;
 
     if(_g->fps_show)

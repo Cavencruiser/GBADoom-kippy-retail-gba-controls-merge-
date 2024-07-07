@@ -115,7 +115,7 @@ unsigned int gamma;
 
 unsigned int fps_timebefore;
 unsigned int fps_frames;
-unsigned int fps_framerate;
+int fps_framerate;
 
 
 //******************************************************************************
