@@ -52,7 +52,7 @@ void I_InitScreen_e32()
     irq_enable(II_VBLANK);
 
     // Set gamepak wait states and prefetch.
-    REG_WAITCNT = 0x46DA;
+    REG_WAITCNT = WS_PREFETCH | WS_ROM2_S1 | WS_ROM2_N2 | WS_ROM1_S1 | WS_ROM1_N2 | WS_ROM0_S1 | WS_ROM0_N2 | WS_SRAM_2;
 
     // Initialize text mode.
     REG_DISPCNT = DCNT_MODE0 | DCNT_BG0;
