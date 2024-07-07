@@ -103,8 +103,9 @@ enum patch_translation_e {
   VPT_STRETCH = 4, // Stretch to compensate for high-res
 };
 
-#ifndef DEBUG
-#define printf(...)
+#ifdef GBA
+#define printf tonc_tte_printf
+void tonc_tte_printf(const char * format, ...);
 #endif
 
 #endif

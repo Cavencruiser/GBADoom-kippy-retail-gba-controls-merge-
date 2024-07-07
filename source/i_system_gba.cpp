@@ -54,7 +54,9 @@ void I_InitScreen_e32()
     // Set gamepak wait states and prefetch.
     REG_WAITCNT = 0x46DA;
 
-    // TODO: TTE init
+    // Initialize text mode.
+    REG_DISPCNT = DCNT_MODE0 | DCNT_BG0;
+    tte_init_se_default(0, BG_CBB(0)|BG_SBB(31));
 
     REG_TM2CNT_L= 65535-1872;     // 1872 ticks = 1/35 secs
     REG_TM2CNT_H = TM_FREQ_256 | TM_ENABLE;       // we're using the 256 cycle timer
@@ -320,12 +322,14 @@ void I_ProcessKeyEvents()
 
 //**************************************************************************************
 
-#define MAX_MESSAGE_SIZE 1024
+#define MAX_MESSAGE_SIZE 512
 
 __attribute__((noreturn))
 void I_Error (const char *error, ...)
 {
-    // TODO: TTE init
+    // Initialize text mode.
+    REG_DISPCNT = DCNT_MODE0 | DCNT_BG0;
+    tte_init_se_default(0, BG_CBB(0)|BG_SBB(31));
 
     char msg[MAX_MESSAGE_SIZE];
 
@@ -336,7 +340,7 @@ void I_Error (const char *error, ...)
 
     va_end(v);
 
-    // TODO: printf("%s", msg);
+    tte_write(msg);
 
     while(true)
         VBlankIntrWait();
@@ -348,6 +352,21 @@ extern "C"
 void __assert_func_stub(const char *file, int line, const char *fnct, const char *msg)
 {
     I_Error(msg);
+}
+
+void tonc_tte_printf(const char * format, ...)
+{
+    char msg[128];
+
+    va_list v;
+    va_start(v, format);
+
+    vsnprintf(msg, 128, format, v);
+    msg[128 - 1] = 0;
+
+    va_end(v);
+
+    tte_write(msg);
 }
 
 }
