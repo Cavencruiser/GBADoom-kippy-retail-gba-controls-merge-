@@ -26,8 +26,19 @@ extern "C"
 
 #include <maxmod.h>
 
-#define VID_PAGE1 MEM_VRAM
-#define VID_PAGE2 (MEM_VRAM + 0xA000)
+#define DCNT_PAGE 0x0010
+
+#define VID_PAGE1 VRAM
+#define VID_PAGE2 0x600A000
+
+#define TM_FREQ_1024 0x0003
+#define TM_ENABLE 0x0080
+#define TM_CASCADE 0x0004
+#define TM_FREQ_1024 0x0003
+#define TM_FREQ_256 0x0002
+
+#define REG_WAITCNT	*((vu16 *)(0x4000204))
+
 
 //**************************************************************************************
 
@@ -51,14 +62,9 @@ void I_InitScreen_e32()
     irqEnable(IRQ_VBLANK);
 
 
-    // Set gamepak wait states and prefetch.
-    REG_WAITCNT = WS_PREFETCH | WS_ROM2_S1 | WS_ROM2_N2 | WS_ROM1_S1 | WS_ROM1_N2 | WS_ROM0_S1 | WS_ROM0_N2 | WS_SRAM_2;
-     //Set memory clocks to 2/2/4
-    REG_MEMCTRL = 0x0E000020;
-    // Initialize text mode.
-    REG_DISPCNT = DCNT_MODE0 | DCNT_BG0;
-    tte_init_se_default(0, BG_CBB(0)|BG_SBB(31));
-    
+    //Set gamepak wait states and prefetch.
+    REG_WAITCNT = 0x46DA;
+
     consoleDemoInit();
 
     REG_TM2CNT_L= 65535-1872;     // 1872 ticks = 1/35 secs
