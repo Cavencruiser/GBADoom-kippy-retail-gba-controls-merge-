@@ -645,7 +645,7 @@ static void D_DoomMainSetup(void)
     switch ( _g->gamemode )
     {
         case retail:
-            doomverstr = "The Ultimate DOOM";
+            doomverstr = "Free DOOM Phase 1";
             break;
         case shareware:
             doomverstr = "DOOM Shareware";
@@ -663,7 +663,7 @@ static void D_DoomMainSetup(void)
                 doomverstr = "DOOM 2: TNT - Evilution";
                 break;
             default:
-                doomverstr = "DOOM 2: Hell on Earth";
+                doomverstr = "Free DOOM Phase 2";
                 break;
             }
             break;
@@ -685,7 +685,9 @@ static void D_DoomMainSetup(void)
 
     lprintf(LO_ALWAYS, "It comes with ABSOLUTELY\nNO WARRANTY.\nSee the file COPYING for\ndetails.");
 
-    lprintf(LO_ALWAYS, "\nPhew. Thats the nasty legal\nstuff out of the way.\nLets play Doom!\n");
+	lprintf(LO_ALWAYS, "FreeDoom is provided by the FreeDoom team.\nCopyright � 2001-2019 Contributors to the Freedoom project.\nAll rights reserved.");
+
+    lprintf(LO_ALWAYS, "\nPhew. Thats the legal\nstuff out of the way.\nLets play FreeDoom!\n");
 
 
 
