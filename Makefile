@@ -48,7 +48,7 @@ CFLAGS	:=	-g -Wall -O2 -fgcse-after-reload -gdwarf-4 \
                 -mcpu=arm7tdmi -mtune=arm7tdmi -flto \
                 -fallow-store-data-races \
                 -DGBA -DNDEBUG \
-CFLAGS	+=  -fpermissive
+
 CFLAGS	+=	$(INCLUDE)
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
