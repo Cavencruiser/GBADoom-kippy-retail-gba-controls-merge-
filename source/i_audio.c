@@ -65,7 +65,7 @@
 
 #ifdef GBA
 
-#include <gba.h>
+#include <tonc.h>
 #include <maxmod.h>    // Maxmod definitions for GBA
 
 
@@ -327,7 +327,7 @@ void I_InitSound(void)
 {
 
 #ifdef GBA
-    mmInitDefault(soundbank_bin, 12);
+    mmInitDefault((void*) soundbank_bin, 12);
 #endif
 
 	// Finished initialization.

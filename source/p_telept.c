@@ -89,7 +89,7 @@ int EV_Teleport(const line_t *line, int side, mobj_t *thing)
           if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
             return 0;
 
-            thing->z = thing->floorz;
+          thing->z = thing->floorz;
 
           if (player)
             player->viewz = thing->z + player->viewheight;

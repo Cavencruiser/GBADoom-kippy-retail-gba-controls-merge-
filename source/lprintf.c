@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "doomtype.h"
 #include "lprintf.h"
@@ -58,7 +59,7 @@ int lprintf(OutputLevels pri, const char *s, ...)
 	va_list v;
 	va_start(v,s);
 	
-	vsprintf(msg,s,v);
+	vsnprintf(msg,MAX_MESSAGE_SIZE,s,v);
 	
 	va_end(v);
 

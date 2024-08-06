@@ -95,8 +95,7 @@ boolean P_CheckSight(mobj_t *t1, mobj_t *t2)
   else
     _g->los.bbox[BOXTOP] = t2->y, _g->los.bbox[BOXBOTTOM] = t1->y;
 
-
-    _g->los.maxz = INT_MAX; _g->los.minz = INT_MIN;
+  _g->los.maxz = INT_MAX; _g->los.minz = INT_MIN;
 
   // the head node is the last node output
   return P_CrossBSPNode(numnodes-1);
