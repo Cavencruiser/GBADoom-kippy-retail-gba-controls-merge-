@@ -52,5 +52,6 @@ source/iwad/sigil.c
 source/iwad/doom64.c
 
 source/iwad/
-
-.qtc_clangd/
+*.bak
+*.sav
+msys2_2.bat
