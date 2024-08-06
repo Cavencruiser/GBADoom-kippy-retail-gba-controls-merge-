@@ -44,11 +44,10 @@ MUSIC		:= music
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:=	-g -Wall -Ofast -fgcse-after-reload -gdwarf-4 \
-                -mcpu=arm7tdmi -mtune=arm7tdmi -flto=8 \
+CFLAGS	:=	-g -Wall -O2 -fgcse-after-reload -gdwarf-4 \
+                -mcpu=arm7tdmi -mtune=arm7tdmi -flto \
                 -fallow-store-data-races \
-                -DGBA\
-		$(ARCH)
+                -DGBA -DNDEBUG \
 CFLAGS	+=  -fpermissive
 CFLAGS	+=	$(INCLUDE)
 
