@@ -44,30 +44,31 @@ MUSIC		:= music
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:=	-g -Wall -O3 -fgcse-after-reload -gdwarf-4\
-                -mcpu=arm7tdmi -mtune=arm7tdmi -flto=8\
-                -fallow-store-data-races\
+CFLAGS	:=	-g -Wall -Ofast -fgcse-after-reload -gdwarf-4 \
+                -mcpu=arm7tdmi -mtune=arm7tdmi -flto=8 \
+                -fallow-store-data-races \
                 -DGBA\
 		$(ARCH)
-
+CFLAGS	+=  -fpermissive
 CFLAGS	+=	$(INCLUDE)
 
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
-ASFLAGS	:=	-g $(ARCH)
-LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
+ASFLAGS	:=	$(ARCH)
+LDFLAGS	=	$(ARCH) -Wl,-Map,$(notdir $*.map) -Wl,--defsym=__assert_func=__assert_func_stub
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -lmm -lgba
+LIBS	:= -lmm -ltonc
 
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:=	$(LIBGBA)
+LIBTONC := $(DEVKITPRO)/libtonc
+LIBDIRS	:=	$(LIBTONC) $(LIBGBA)
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
