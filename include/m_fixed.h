@@ -56,13 +56,6 @@ typedef int fixed_t;
  * killough 9/05/98: better code seems to be gotten from using inlined C
  */
 
-inline static int CONSTFUNC D_abs2(fixed_t x)
-{
-  fixed_t _t = (x),_s;
-  _s = _t >> (8*sizeof _t-1);
-  return (_t^_s)-_s;
-}
-
 inline static int CONSTFUNC D_abs(const fixed_t x)
 {
     return (x < 0) ? -x : x;

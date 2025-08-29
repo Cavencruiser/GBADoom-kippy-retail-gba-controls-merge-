@@ -472,10 +472,13 @@ static const lighttable_t* R_LoadColorMap(int lightlevel)
 //  be used. It has also been used with Wolfenstein 3D.
 //
 
+
+
+
 #define COLEXTRABITS 9
 #define COLBITS (FRACBITS + COLEXTRABITS)
 
-inline static void __attribute__((always_inline )) R_DrawColumnPixel(unsigned short* dest, const byte* source, const byte* colormap, unsigned int frac)
+inline static void R_DrawColumnPixel(unsigned short* dest, const byte* source, const byte* colormap, unsigned int frac)
 {
     pixel* d = (pixel*)dest;
 
@@ -488,7 +491,7 @@ inline static void __attribute__((always_inline )) R_DrawColumnPixel(unsigned sh
 #endif
 }
 
-static void R_DrawColumn (const draw_column_vars_t *dcvars)
+static void __attribute__((flatten, optimize("O3"))) R_DrawColumn (const draw_column_vars_t *dcvars)
 {
     int count = (dcvars->yh - dcvars->yl) + 1;
 
@@ -1215,7 +1218,7 @@ static void R_DrawMasked(void)
 //  and the inner loop has to step in texture space u and v.
 //
 
-inline static void __attribute__((always_inline )) R_DrawSpanPixel(unsigned short* dest, const byte* source, const byte* colormap, unsigned int position, unsigned int position2)
+inline static void R_DrawSpanPixel(unsigned short* dest, const byte* source, const byte* colormap, unsigned int position, unsigned int position2)
 {
     const unsigned int p1 = colormap[source[(position & 0x0fc0) | (position >> 22)]];
     const unsigned int p2 = colormap[source[(position2 & 0x0fc0) | (position2 >> 22)]];
@@ -1262,7 +1265,7 @@ static void R_DrawSpan(unsigned int y, unsigned int x1, const unsigned int count
     }
 }
 
-static void R_MapPlane(unsigned int y, unsigned int x1, unsigned int x2, draw_span_vars_t *dsvars)
+static void __attribute__((flatten, optimize("O3"))) R_MapPlane(unsigned int y, unsigned int x1, unsigned int x2, draw_span_vars_t *dsvars)
 {
     const fixed_t distance = FixedMul(planeheight, yslope[y]);
     const fixed_t length = FixedMul (distance, distscale[x1]);
@@ -1725,9 +1728,9 @@ static unsigned int FindColumnCacheItem(unsigned int texture, unsigned int colum
     //static unsigned int looks, peeks;
     //looks++;
 
-    unsigned int cx = CACHE_ENTRY(column, texture);
+    const unsigned int cx = CACHE_ENTRY(column, texture);
 
-    unsigned int key = CACHE_HASH(column, texture);
+    const unsigned int key = CACHE_HASH(column, texture);
 
     unsigned int* cc = (unsigned int*)&columnCacheEntries[key];
 
@@ -1736,7 +1739,7 @@ static unsigned int FindColumnCacheItem(unsigned int texture, unsigned int colum
     do
     {
         //peeks++;
-        unsigned int cy = *cc;
+        const unsigned int cy = *cc;
 
         if((cy == cx) || (cy == 0))
             return i;
@@ -1857,7 +1860,7 @@ static void R_DrawSegTextureColumn(unsigned int texture, int texcolumn, draw_col
 #define HEIGHTUNIT (1<<HEIGHTBITS)
 
 //Optimise me
-static void R_RenderSegLoop (int rw_x)
+static void __attribute__((optimize("O3"))) R_RenderSegLoop (int rw_x)
 {
     fixed_t  texturecolumn = 0;   // shut up compiler warning
 
