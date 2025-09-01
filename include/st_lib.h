@@ -150,10 +150,7 @@ void STlib_initNum
   bool* on,
   int width );
 
-void STlib_updateNum
-( st_number_t* n,
-  int cm,
-  bool refresh );
+void STlib_updateNum (st_number_t* n);
 
 
 // Percent widget routines
@@ -167,10 +164,7 @@ void STlib_initPercent
   const patch_t* percent );
 
 
-void STlib_updatePercent
-( st_percent_t* per,
-  int cm,
-  int refresh );
+void STlib_updatePercent (st_percent_t* per);
 
 
 // Multiple Icon widget routines
@@ -183,9 +177,7 @@ void STlib_initMultIcon
   bool* on );
 
 
-void STlib_updateMultIcon
-( st_multicon_t* mi,
-  bool refresh );
+void STlib_updateMultIcon (st_multicon_t* mi);
 
 // Binary Icon widget routines
 

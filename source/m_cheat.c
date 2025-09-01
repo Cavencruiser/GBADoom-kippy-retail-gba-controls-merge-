@@ -57,7 +57,7 @@ static const unsigned int num_cheats = sizeof(cheat_def) / sizeof (c_cheat);
 
 static bool CheckCheats(unsigned int keybuff)
 {
-    for(int i = 0; i < num_cheats; i++)
+    for(unsigned int i = 0; i < num_cheats; i++)
     {
         if(cheat_def[i].packed_sequence == keybuff)
         {

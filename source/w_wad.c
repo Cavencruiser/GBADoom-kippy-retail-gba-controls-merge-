@@ -33,6 +33,7 @@
  */
 
 // use config.h if autoconf made one -- josh
+#include <ctype.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -41,21 +42,10 @@
 #endif
 
 #include <fcntl.h>
-
-#include "doomstat.h"
-#include "d_net.h"
 #include "doomtype.h"
-#include "i_system.h"
-
 #include "doom_iwad.h"
-
-#ifdef __GNUG__
-#pragma implementation "w_wad.h"
-#endif
 #include "w_wad.h"
 #include "lprintf.h"
-
-#include "global_data.h"
 
 //
 // GLOBALS

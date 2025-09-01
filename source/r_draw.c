@@ -33,18 +33,10 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include "doomstat.h"
-#include "w_wad.h"
 #include "r_main.h"
 #include "r_draw.h"
 #include "v_video.h"
-#include "st_stuff.h"
-#include "g_game.h"
-#include "am_map.h"
-#include "lprintf.h"
-
 #include "gba_functions.h"
-
 #include "global_data.h"
 
 //

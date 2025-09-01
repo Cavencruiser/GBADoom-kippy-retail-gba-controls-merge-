@@ -41,25 +41,16 @@
 #include <unistd.h>
 #endif
 
-#include "doomdef.h"
 #include "d_main.h"
-#include "m_fixed.h"
 #include "i_system.h"
 #include "i_video.h"
 #include "z_zone.h"
 #include "lprintf.h"
-#include "m_random.h"
-#include "doomstat.h"
-#include "g_game.h"
-#include "m_misc.h"
+
 #include "i_sound.h"
 #include "i_main.h"
 #include "lprintf.h"
 #include "global_data.h"
-
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 /* Most of the following has been rewritten by Lee Killough
  *

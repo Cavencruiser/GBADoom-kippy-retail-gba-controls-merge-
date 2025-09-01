@@ -32,16 +32,9 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include "doomstat.h"
 #include "w_wad.h"
-#include "r_draw.h"
 #include "r_main.h"
-#include "r_sky.h"
-#include "i_system.h"
-#include "r_things.h"
-#include "p_tick.h"
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
-#include "p_tick.h"
 
 #include "global_data.h"
 
@@ -64,23 +57,23 @@
 
 typedef struct
 {
-  short originx;
-  short originy;
-  short patch;
-  short stepdir;         // unused in Doom but might be used in Phase 2 Boom
-  short colormap;        // unused in Doom but might be used in Phase 2 Boom
+    short originx;
+    short originy;
+    short patch;
+    short stepdir;         // unused in Doom but might be used in Phase 2 Boom
+    short colormap;        // unused in Doom but might be used in Phase 2 Boom
 } PACKEDATTR mappatch_t;
 
 
 typedef struct
 {
-  char       name[8];
-  char       pad2[4];      // unused
-  short      width;
-  short      height;
-  char       pad[4];       // unused in Doom but might be used in Boom Phase 2
-  short      patchcount;
-  mappatch_t patches[1];
+    char       name[8];
+    char       pad2[4];      // unused
+    short      width;
+    short      height;
+    char       pad[4];       // unused in Doom but might be used in Boom Phase 2
+    short      patchcount;
+    mappatch_t patches[1];
 } PACKEDATTR maptexture_t;
 
 // A maptexturedef_t describes a rectangular texture, which is composed
@@ -342,21 +335,21 @@ static void R_InitTextures()
 //
 static void R_InitFlats(void)
 {
-  int i;
+    int i;
 
-  _g->firstflat = W_GetNumForName("F_START") + 1;
-  int lastflat  = W_GetNumForName("F_END") - 1;
-  _g->numflats  = lastflat - _g->firstflat + 1;
+    _g->firstflat = W_GetNumForName("F_START") + 1;
+    int lastflat  = W_GetNumForName("F_END") - 1;
+    _g->numflats  = lastflat - _g->firstflat + 1;
 
-  // Create translation table for global animation.
-  // killough 4/9/98: make column offsets 32-bit;
-  // clean up malloc-ing to use sizeof
+    // Create translation table for global animation.
+    // killough 4/9/98: make column offsets 32-bit;
+    // clean up malloc-ing to use sizeof
 
-  flattranslation =
-    Z_Malloc((_g->numflats+1)*sizeof(*flattranslation), PU_STATIC, 0);
+    flattranslation =
+            Z_Malloc((_g->numflats+1)*sizeof(*flattranslation), PU_STATIC, 0);
 
-  for (i=0 ; i<_g->numflats ; i++)
-    flattranslation[i] = i;
+    for (i=0 ; i<_g->numflats ; i++)
+        flattranslation[i] = i;
 }
 
 //
@@ -367,9 +360,9 @@ static void R_InitFlats(void)
 //
 static void R_InitSpriteLumps(void)
 {
-  _g->firstspritelump = W_GetNumForName("S_START") + 1;
-  _g->lastspritelump = W_GetNumForName("S_END") - 1;
-  _g->numspritelumps = _g->lastspritelump - _g->firstspritelump + 1;
+    _g->firstspritelump = W_GetNumForName("S_START") + 1;
+    _g->lastspritelump = W_GetNumForName("S_END") - 1;
+    _g->numspritelumps = _g->lastspritelump - _g->firstspritelump + 1;
 }
 
 //
@@ -390,14 +383,14 @@ void R_InitColormaps (void)
 
 void R_InitData(void)
 {
-  lprintf("Textures");
-  R_InitTextures();
-  lprintf("Flats");
-  R_InitFlats();
-  lprintf("Sprites");
-  R_InitSpriteLumps();
-  lprintf("Colormaps");
-  R_InitColormaps();                    // killough 3/20/98
+    lprintf("Textures");
+    R_InitTextures();
+    lprintf("Flats");
+    R_InitFlats();
+    lprintf("Sprites");
+    R_InitSpriteLumps();
+    lprintf("Colormaps");
+    R_InitColormaps();                    // killough 3/20/98
 }
 
 //
@@ -409,11 +402,11 @@ void R_InitData(void)
 
 int R_FlatNumForName(const char *name)    // killough -- const added
 {
-  int i = W_CheckNumForName(name);
+    int i = W_CheckNumForName(name);
 
-  if (i == -1)
-    I_Error("R_FlatNumForName: %.8s not found", name);
-  return i - _g->firstflat;
+    if (i == -1)
+        I_Error("R_FlatNumForName: %.8s not found", name);
+    return i - _g->firstflat;
 }
 
 //

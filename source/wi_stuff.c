@@ -32,17 +32,13 @@
  *-----------------------------------------------------------------------------
  */
 
-#include "doomstat.h"
-#include "m_random.h"
 #include "w_wad.h"
 #include "g_game.h"
-#include "r_main.h"
 #include "v_video.h"
 #include "wi_stuff.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
-#include "r_draw.h"
 
 #include "global_data.h"
 
@@ -109,50 +105,50 @@
 
 typedef struct
 {
-  int   x;       // x/y coordinate pair structure
-  int   y;
+    int   x;       // x/y coordinate pair structure
+    int   y;
 } point_t;
 
 static const point_t lnodes[NUMEPISODES][NUMMAPS] =
 {
-  // Episode 0 World Map
-  {
-    { 185, 164 }, // location of level 0 (CJ)
-    { 148, 143 }, // location of level 1 (CJ)
-    { 69, 122 },  // location of level 2 (CJ)
-    { 209, 102 }, // location of level 3 (CJ)
-    { 116, 89 },  // location of level 4 (CJ)
-    { 166, 55 },  // location of level 5 (CJ)
-    { 71, 56 },   // location of level 6 (CJ)
-    { 135, 29 },  // location of level 7 (CJ)
-    { 71, 24 }    // location of level 8 (CJ)
-  },
+    // Episode 0 World Map
+    {
+        { 185, 164 }, // location of level 0 (CJ)
+        { 148, 143 }, // location of level 1 (CJ)
+        { 69, 122 },  // location of level 2 (CJ)
+        { 209, 102 }, // location of level 3 (CJ)
+        { 116, 89 },  // location of level 4 (CJ)
+        { 166, 55 },  // location of level 5 (CJ)
+        { 71, 56 },   // location of level 6 (CJ)
+        { 135, 29 },  // location of level 7 (CJ)
+        { 71, 24 }    // location of level 8 (CJ)
+    },
 
-  // Episode 1 World Map should go here
-  {
-    { 254, 25 },  // location of level 0 (CJ)
-    { 97, 50 },   // location of level 1 (CJ)
-    { 188, 64 },  // location of level 2 (CJ)
-    { 128, 78 },  // location of level 3 (CJ)
-    { 214, 92 },  // location of level 4 (CJ)
-    { 133, 130 }, // location of level 5 (CJ)
-    { 208, 136 }, // location of level 6 (CJ)
-    { 148, 140 }, // location of level 7 (CJ)
-    { 235, 158 }  // location of level 8 (CJ)
-  },
+    // Episode 1 World Map should go here
+    {
+        { 254, 25 },  // location of level 0 (CJ)
+        { 97, 50 },   // location of level 1 (CJ)
+        { 188, 64 },  // location of level 2 (CJ)
+        { 128, 78 },  // location of level 3 (CJ)
+        { 214, 92 },  // location of level 4 (CJ)
+        { 133, 130 }, // location of level 5 (CJ)
+        { 208, 136 }, // location of level 6 (CJ)
+        { 148, 140 }, // location of level 7 (CJ)
+        { 235, 158 }  // location of level 8 (CJ)
+    },
 
-  // Episode 2 World Map should go here
-  {
-    { 156, 168 }, // location of level 0 (CJ)
-    { 48, 154 },  // location of level 1 (CJ)
-    { 174, 95 },  // location of level 2 (CJ)
-    { 265, 75 },  // location of level 3 (CJ)
-    { 130, 48 },  // location of level 4 (CJ)
-    { 279, 23 },  // location of level 5 (CJ)
-    { 198, 48 },  // location of level 6 (CJ)
-    { 140, 25 },  // location of level 7 (CJ)
-    { 281, 136 }  // location of level 8 (CJ)
-  }
+    // Episode 2 World Map should go here
+    {
+        { 156, 168 }, // location of level 0 (CJ)
+        { 48, 154 },  // location of level 1 (CJ)
+        { 174, 95 },  // location of level 2 (CJ)
+        { 265, 75 },  // location of level 3 (CJ)
+        { 130, 48 },  // location of level 4 (CJ)
+        { 279, 23 },  // location of level 5 (CJ)
+        { 198, 48 },  // location of level 6 (CJ)
+        { 140, 25 },  // location of level 7 (CJ)
+        { 281, 136 }  // location of level 8 (CJ)
+    }
 };
 
 
@@ -254,14 +250,14 @@ static void WI_endNetgameStats(void)
  */
 void WI_levelNameLump(int epis, int map, char* buf)
 {
-  if (_g->gamemode == commercial)
-  {
-    sprintf(buf, "CWILV%2.2d", map);
-  }
-  else
-  {
-    sprintf(buf, "WILV%d%d", epis, map);
-  }
+    if (_g->gamemode == commercial)
+    {
+        sprintf(buf, "CWILV%2.2d", map);
+    }
+    else
+    {
+        sprintf(buf, "WILV%d%d", epis, map);
+    }
 }
 
 // ====================================================================
@@ -272,31 +268,16 @@ void WI_levelNameLump(int epis, int map, char* buf)
 //
 static void WI_slamBackground(void)
 {
-  char  name[9];  // limited to 8 characters
+    char  name[9];  // limited to 8 characters
 
-  if (_g->gamemode == commercial || (_g->gamemode == retail && _g->wbs->epsd == 3))
-    strcpy(name, "INTERPIC");
-  else
-    sprintf(name, "WIMAP%d", _g->wbs->epsd);
+    if (_g->gamemode == commercial || (_g->gamemode == retail && _g->wbs->epsd == 3))
+        strcpy(name, "INTERPIC");
+    else
+        sprintf(name, "WIMAP%d", _g->wbs->epsd);
 
-  // background
-  V_DrawNamePatch(0, 0, FB, name, CR_DEFAULT, VPT_STRETCH);
+    // background
+    V_DrawNamePatch(0, 0, FB, name);
 }
-
-
-// ====================================================================
-// WI_Responder
-// Purpose: Draw animations on intermission background screen
-// Args:    ev    -- event pointer, not actually used here.
-// Returns: False -- dummy routine
-//
-// The ticker is used to detect keys
-//  because of timing issues in netgames.
-bool WI_Responder(event_t* ev)
-{
-  return false;
-}
-
 
 // ====================================================================
 // WI_drawLF
@@ -306,22 +287,22 @@ bool WI_Responder(event_t* ev)
 //
 void WI_drawLF(void)
 {
-  int y = WI_TITLEY;
-  char lname[9];
+    int y = WI_TITLEY;
+    char lname[9];
 
-  // draw <LevelName>
-  /* cph - get the graphic lump name and use it */
-  WI_levelNameLump(_g->wbs->epsd, _g->wbs->last, lname);
-  // CPhipps - patch drawing updated
-  V_DrawNamePatch((320 - V_NamePatchWidth(lname))/2, y,
-     FB, lname, CR_DEFAULT, VPT_STRETCH);
+    // draw <LevelName>
+    /* cph - get the graphic lump name and use it */
+    WI_levelNameLump(_g->wbs->epsd, _g->wbs->last, lname);
+    // CPhipps - patch drawing updated
+    V_DrawNamePatch((320 - V_NamePatchWidth(lname))/2, y,
+                    FB, lname);
 
-  // draw "Finished!"
-  y += (5*V_NamePatchHeight(lname))/4;
+    // draw "Finished!"
+    y += (5*V_NamePatchHeight(lname))/4;
 
-  // CPhipps - patch drawing updated
-  V_DrawNamePatch((320 - V_NamePatchWidth(finished))/2, y,
-     FB, finished, CR_DEFAULT, VPT_STRETCH);
+    // CPhipps - patch drawing updated
+    V_DrawNamePatch((320 - V_NamePatchWidth(finished))/2, y,
+                    FB, finished);
 }
 
 
@@ -333,23 +314,23 @@ void WI_drawLF(void)
 //
 void WI_drawEL(void)
 {
-  int y = WI_TITLEY;
-  char lname[9];
+    int y = WI_TITLEY;
+    char lname[9];
 
-  /* cph - get the graphic lump name */
-  WI_levelNameLump(_g->wbs->epsd, _g->wbs->next, lname);
+    /* cph - get the graphic lump name */
+    WI_levelNameLump(_g->wbs->epsd, _g->wbs->next, lname);
 
-  // draw "Entering"
-  // CPhipps - patch drawing updated
-  V_DrawNamePatch((320 - V_NamePatchWidth(entering))/2,
-      y, FB, entering, CR_DEFAULT, VPT_STRETCH);
+    // draw "Entering"
+    // CPhipps - patch drawing updated
+    V_DrawNamePatch((320 - V_NamePatchWidth(entering))/2,
+                    y, FB, entering);
 
-  // draw level
-  y += (5*V_NamePatchHeight(lname))/4;
+    // draw level
+    y += (5*V_NamePatchHeight(lname))/4;
 
-  // CPhipps - patch drawing updated
-  V_DrawNamePatch((320 - V_NamePatchWidth(lname))/2, y, FB,
-     lname, CR_DEFAULT, VPT_STRETCH);
+    // CPhipps - patch drawing updated
+    V_DrawNamePatch((320 - V_NamePatchWidth(lname))/2, y, FB,
+                    lname);
 }
 
 
@@ -365,48 +346,48 @@ WI_drawOnLnode  // draw stuff at a location by episode/map#
 ( int   n,
   const char* const c[] )
 {
-  int   i;
-  bool fits = false;
+    int   i;
+    bool fits = false;
 
-  i = 0;
-  do
-  {
-    int            left;
-    int            top;
-    int            right;
-    int            bottom;
-    const patch_t* patch = W_CacheLumpName(c[i]);
-
-    left = lnodes[_g->wbs->epsd][n].x - patch->leftoffset;
-    top = lnodes[_g->wbs->epsd][n].y - patch->topoffset;
-    right = left + patch->width;
-    bottom = top + patch->height;
-
-    if (left >= 0
-       && right < 320
-       && top >= 0
-       && bottom < 200)
+    i = 0;
+    do
     {
-      fits = true;
+        int            left;
+        int            top;
+        int            right;
+        int            bottom;
+        const patch_t* patch = W_CacheLumpName(c[i]);
+
+        left = lnodes[_g->wbs->epsd][n].x - patch->leftoffset;
+        top = lnodes[_g->wbs->epsd][n].y - patch->topoffset;
+        right = left + patch->width;
+        bottom = top + patch->height;
+
+        if (left >= 0
+                && right < 320
+                && top >= 0
+                && bottom < 200)
+        {
+            fits = true;
+        }
+        else
+        {
+            i++;
+        }
+    } while (!fits && i!=2);
+
+    if (fits && i<2)
+    {
+        // CPhipps - patch drawing updated
+        V_DrawNamePatch(lnodes[_g->wbs->epsd][n].x, lnodes[_g->wbs->epsd][n].y,
+                        FB, c[i]);
     }
     else
     {
-      i++;
+        // DEBUG
+        //jff 8/3/98 use logical output routine
+        lprintf("Could not place patch on level %d", n+1);
     }
-  } while (!fits && i!=2);
-
-  if (fits && i<2)
-  {
-    // CPhipps - patch drawing updated
-    V_DrawNamePatch(lnodes[_g->wbs->epsd][n].x, lnodes[_g->wbs->epsd][n].y,
-       FB, c[i], CR_DEFAULT, VPT_STRETCH);
-  }
-  else
-  {
-    // DEBUG
-    //jff 8/3/98 use logical output routine
-    lprintf("Could not place patch on level %d", n+1);
-  }
 }
 
 
@@ -457,54 +438,54 @@ void WI_drawAnimatedBack(void)
 // CPhipps - static
 static int WI_drawNum (int x, int y, int n, int digits)
 {
-  int   fontwidth = _g->num[0]->width;
-  int   neg;
-  int   temp;
+    int   fontwidth = _g->num[0]->width;
+    int   neg;
+    int   temp;
 
-  if (digits < 0)
-  {
-    if (!n)
+    if (digits < 0)
     {
-      // make variable-length zeros 1 digit long
-      digits = 1;
+        if (!n)
+        {
+            // make variable-length zeros 1 digit long
+            digits = 1;
+        }
+        else
+        {
+            // figure out # of digits in #
+            digits = 0;
+            temp = n;
+
+            while (temp)
+            {
+                temp /= 10;
+                digits++;
+            }
+        }
     }
-    else
+
+    neg = n < 0;
+    if (neg)
+        n = -n;
+
+    // if non-number, do not draw it
+    if (n == 1994)
+        return 0;
+
+    // draw the new number
+    while (digits--)
     {
-      // figure out # of digits in #
-      digits = 0;
-      temp = n;
-
-      while (temp)
-      {
-        temp /= 10;
-        digits++;
-      }
+        x -= fontwidth;
+        // CPhipps - patch drawing updated
+        V_DrawPatch(x, y, FB, _g->num[ n % 10 ]);
+        n /= 10;
     }
-  }
 
-  neg = n < 0;
-  if (neg)
-    n = -n;
+    // draw a minus sign if necessary
+    if (neg)
+        // CPhipps - patch drawing updated
+        V_DrawNamePatch(x-=8, y, FB, wiminus);
 
-  // if non-number, do not draw it
-  if (n == 1994)
-    return 0;
-
-  // draw the new number
-  while (digits--)
-  {
-    x -= fontwidth;
-    // CPhipps - patch drawing updated
-    V_DrawPatch(x, y, FB, _g->num[ n % 10 ]);
-    n /= 10;
-  }
-
-  // draw a minus sign if necessary
-  if (neg)
-    // CPhipps - patch drawing updated
-    V_DrawNamePatch(x-=8, y, FB, wiminus, CR_DEFAULT, VPT_STRETCH);
-
-  return x;
+    return x;
 }
 
 
@@ -518,12 +499,12 @@ static int WI_drawNum (int x, int y, int n, int digits)
 // CPhipps - static
 static void WI_drawPercent(int x, int y, int p)
 {
-  if (p < 0)
-    return;
+    if (p < 0)
+        return;
 
-  // CPhipps - patch drawing updated
-  V_DrawNamePatch(x, y, FB, percent, CR_DEFAULT, VPT_STRETCH);
-  WI_drawNum(x, y, p, -1);
+    // CPhipps - patch drawing updated
+    V_DrawNamePatch(x, y, FB, percent);
+    WI_drawNum(x, y, p, -1);
 }
 
 
@@ -540,26 +521,26 @@ static void WI_drawPercent(int x, int y, int p)
 
 static void WI_drawTime(int x, int y, int t)
 {
-  int   n;
+    int   n;
 
-  if (t<0)
-    return;
+    if (t<0)
+        return;
 
-  if (t < 100*60*60)
-    for(;;) {
-      n = t % 60;
-      t /= 60;
-      x = WI_drawNum(x, y, n, (t || n>9) ? 2 : 1) - V_NamePatchWidth(colon);
+    if (t < 100*60*60)
+        for(;;) {
+            n = t % 60;
+            t /= 60;
+            x = WI_drawNum(x, y, n, (t || n>9) ? 2 : 1) - V_NamePatchWidth(colon);
 
-      // draw
-      if (t)
-  // CPhipps - patch drawing updated
-        V_DrawNamePatch(x, y, FB, colon, CR_DEFAULT, VPT_STRETCH);
-      else break;
-    }
-  else // "sucks" (maybe should be "addicted", even I've never had a 100 hour game ;)
-    V_DrawNamePatch(x - V_NamePatchWidth(sucks),
-        y, FB, sucks, CR_DEFAULT, VPT_STRETCH);
+            // draw
+            if (t)
+                // CPhipps - patch drawing updated
+                V_DrawNamePatch(x, y, FB, colon);
+            else break;
+        }
+    else // "sucks" (maybe should be "addicted", even I've never had a 100 hour game ;)
+        V_DrawNamePatch(x - V_NamePatchWidth(sucks),
+                        y, FB, sucks);
 }
 
 
@@ -583,9 +564,9 @@ void WI_End(void)
 //
 void WI_initNoState(void)
 {
-  _g->state = NoState;
-  _g->acceleratestage = 0;
-  _g->cnt = 10;
+    _g->state = NoState;
+    _g->acceleratestage = 0;
+    _g->cnt = 10;
 }
 
 
@@ -599,21 +580,21 @@ void WI_initNoState(void)
 
 static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
 {
-  V_DrawNamePatch(SP_TIMEX, SP_TIMEY, FB, time1, CR_DEFAULT, VPT_STRETCH);
-  WI_drawTime(320/2 - SP_TIMEX, SP_TIMEY, cnt_time);
+    V_DrawNamePatch(SP_TIMEX, SP_TIMEY, FB, time1);
+    WI_drawTime(320/2 - SP_TIMEX, SP_TIMEY, cnt_time);
 
-  V_DrawNamePatch(SP_TIMEX, (SP_TIMEY+200)/2, FB, total, CR_DEFAULT, VPT_STRETCH);
-  WI_drawTime(320/2 - SP_TIMEX, (SP_TIMEY+200)/2, cnt_total_time);
+    V_DrawNamePatch(SP_TIMEX, (SP_TIMEY+200)/2, FB, total);
+    WI_drawTime(320/2 - SP_TIMEX, (SP_TIMEY+200)/2, cnt_total_time);
 
-  // Ty 04/11/98: redid logic: should skip only if with pwad but
-  // without deh patch
-  // killough 2/22/98: skip drawing par times on pwads
-  // Ty 03/17/98: unless pars changed with deh patch
+    // Ty 04/11/98: redid logic: should skip only if with pwad but
+    // without deh patch
+    // killough 2/22/98: skip drawing par times on pwads
+    // Ty 03/17/98: unless pars changed with deh patch
 
     if (_g->wbs->epsd < 3)
     {
-      V_DrawNamePatch(320/2 + SP_TIMEX, SP_TIMEY, FB, par, CR_DEFAULT, VPT_STRETCH);
-      WI_drawTime(320 - SP_TIMEX, SP_TIMEY, cnt_par);
+        V_DrawNamePatch(320/2 + SP_TIMEX, SP_TIMEY, FB, par);
+        WI_drawTime(320 - SP_TIMEX, SP_TIMEY, cnt_par);
     }
 
 }
@@ -627,10 +608,10 @@ static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
 void WI_updateNoState(void)
 {
 
-  WI_updateAnimatedBack();
+    WI_updateAnimatedBack();
 
-  if (!--_g->cnt)
-    G_WorldDone();
+    if (!--_g->cnt)
+        G_WorldDone();
 }
 
 // ====================================================================
@@ -641,25 +622,25 @@ void WI_updateNoState(void)
 //
 void WI_initShowNextLoc(void)
 {
-  if ((_g->gamemode != commercial) && (_g->gamemap == 8)) {
-    G_WorldDone();
-    return;
-  }
+    if ((_g->gamemode != commercial) && (_g->gamemap == 8)) {
+        G_WorldDone();
+        return;
+    }
 
-  _g->state = ShowNextLoc;
-  _g->acceleratestage = 0;
-  
-  // e6y: That was pretty easy - only a HEX editor and luck
-  // There is no more desync on ddt-tas.zip\e4tux231.lmp
-  // --------- tasdoom.idb ---------
-  // .text:00031194 loc_31194:      ; CODE XREF: WI_updateStats+3A9j
-  // .text:00031194                 mov     ds:state, 1
-  // .text:0003119E                 mov     ds:acceleratestage, 0
-  // .text:000311A8                 mov     ds:cnt, 3Ch
-  // nowhere no hide
+    _g->state = ShowNextLoc;
+    _g->acceleratestage = 0;
+
+    // e6y: That was pretty easy - only a HEX editor and luck
+    // There is no more desync on ddt-tas.zip\e4tux231.lmp
+    // --------- tasdoom.idb ---------
+    // .text:00031194 loc_31194:      ; CODE XREF: WI_updateStats+3A9j
+    // .text:00031194                 mov     ds:state, 1
+    // .text:0003119E                 mov     ds:acceleratestage, 0
+    // .text:000311A8                 mov     ds:cnt, 3Ch
+    // nowhere no hide
     _g->cnt = SHOWNEXTLOCDELAY * TICRATE;
 
-  WI_initAnimatedBack();
+    WI_initAnimatedBack();
 }
 
 
@@ -671,12 +652,12 @@ void WI_initShowNextLoc(void)
 //
 void WI_updateShowNextLoc(void)
 {
-  WI_updateAnimatedBack();
+    WI_updateAnimatedBack();
 
-  if (!--_g->cnt || _g->acceleratestage)
-    WI_initNoState();
-  else
-    _g->snl_pointeron = (_g->cnt & 31) < 20;
+    if (!--_g->cnt || _g->acceleratestage)
+        WI_initNoState();
+    else
+        _g->snl_pointeron = (_g->cnt & 31) < 20;
 }
 
 
@@ -733,8 +714,8 @@ void WI_drawShowNextLoc(void)
 //
 void WI_drawNoState(void)
 {
-  _g->snl_pointeron = true;
-  WI_drawShowNextLoc();
+    _g->snl_pointeron = true;
+    WI_drawShowNextLoc();
 }
 
 // ====================================================================
@@ -750,18 +731,18 @@ void WI_drawNoState(void)
 
 void WI_initStats(void)
 {
-  _g->state = StatCount;
-  _g->acceleratestage = 0;
-  _g->sp_state = 1;
+    _g->state = StatCount;
+    _g->acceleratestage = 0;
+    _g->sp_state = 1;
 
-  _g->cnt_kills = -1;
-  _g->cnt_secret = -1;
-  _g->cnt_items = -1;
+    _g->cnt_kills = -1;
+    _g->cnt_secret = -1;
+    _g->cnt_items = -1;
 
-  _g->cnt_time = _g->cnt_par = _g->cnt_total_time = -1;
-  _g->cnt_pause = TICRATE;
+    _g->cnt_time = _g->cnt_par = _g->cnt_total_time = -1;
+    _g->cnt_pause = TICRATE;
 
-  WI_initAnimatedBack();
+    WI_initAnimatedBack();
 }
 
 // ====================================================================
@@ -772,117 +753,117 @@ void WI_initStats(void)
 //
 void WI_updateStats(void)
 {
-  WI_updateAnimatedBack();
+    WI_updateAnimatedBack();
 
-  if (_g->acceleratestage && _g->sp_state != 10)
-  {
-    _g->acceleratestage = 0;
-    _g->cnt_kills = (_g->plrs[0].skills * 100) / _g->wbs->maxkills;
-    _g->cnt_items = (_g->plrs[0].sitems * 100) / _g->wbs->maxitems;
-
-    // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-    _g->cnt_secret = (_g->wbs->maxsecret ?
-      (_g->plrs[0].ssecret * 100) / _g->wbs->maxsecret : 100);
-
-    _g->cnt_total_time = _g->wbs->totaltimes / TICRATE;
-    _g->cnt_time = _g->plrs[0].stime / TICRATE;
-    _g->cnt_par = _g->wbs->partime / TICRATE;
-    S_StartSound(0, sfx_barexp);
-    _g->sp_state = 10;
-  }
-
-  if (_g->sp_state == 2)
-  {
-    _g->cnt_kills += 2;
-
-    if (!(_g->bcnt&3))
-      S_StartSound(0, sfx_pistol);
-
-    if (_g->cnt_kills >= (_g->plrs[0].skills * 100) / _g->wbs->maxkills)
+    if (_g->acceleratestage && _g->sp_state != 10)
     {
-      _g->cnt_kills = (_g->plrs[0].skills * 100) / _g->wbs->maxkills;
-      S_StartSound(0, sfx_barexp);
-      _g->sp_state++;
-    }
-  }
-  else if (_g->sp_state == 4)
-  {
-    _g->cnt_items += 2;
+        _g->acceleratestage = 0;
+        _g->cnt_kills = (_g->plrs[0].skills * 100) / _g->wbs->maxkills;
+        _g->cnt_items = (_g->plrs[0].sitems * 100) / _g->wbs->maxitems;
 
-    if (!(_g->bcnt&3))
-      S_StartSound(0, sfx_pistol);
+        // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
+        _g->cnt_secret = (_g->wbs->maxsecret ?
+                              (_g->plrs[0].ssecret * 100) / _g->wbs->maxsecret : 100);
 
-    if (_g->cnt_items >= (_g->plrs[0].sitems * 100) / _g->wbs->maxitems)
-    {
-      _g->cnt_items = (_g->plrs[0].sitems * 100) / _g->wbs->maxitems;
-      S_StartSound(0, sfx_barexp);
-      _g->sp_state++;
-    }
-  }
-  else if (_g->sp_state == 6)
-  {
-    _g->cnt_secret += 2;
-
-    if (!(_g->bcnt&3))
-      S_StartSound(0, sfx_pistol);
-
-    // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-    if (_g->cnt_secret >= (_g->wbs->maxsecret ? (_g->plrs[0].ssecret * 100) / _g->wbs->maxsecret : 100))
-    {
-      _g->cnt_secret = (_g->wbs->maxsecret ?
-        (_g->plrs[0].ssecret * 100) / _g->wbs->maxsecret : 100);
-      S_StartSound(0, sfx_barexp);
-      _g->sp_state++;
-    }
-  }
-  else if (_g->sp_state == 8)
-  {
-    if (!(_g->bcnt&3))
-      S_StartSound(0, sfx_pistol);
-
-    _g->cnt_time += 3;
-
-    if (_g->cnt_time >= _g->plrs[0].stime / TICRATE)
-      _g->cnt_time = _g->plrs[0].stime / TICRATE;
-
-    _g->cnt_total_time += 3;
-
-    if (_g->cnt_total_time >= _g->wbs->totaltimes / TICRATE)
-      _g->cnt_total_time = _g->wbs->totaltimes / TICRATE;
-
-    _g->cnt_par += 3;
-
-    if (_g->cnt_par >= _g->wbs->partime / TICRATE)
-    {
-      _g->cnt_par = _g->wbs->partime / TICRATE;
-
-      if ((_g->cnt_time >= _g->plrs[0].stime / TICRATE) && (_g->cnt_total_time >= _g->wbs->totaltimes / TICRATE))
-      {
+        _g->cnt_total_time = _g->wbs->totaltimes / TICRATE;
+        _g->cnt_time = _g->plrs[0].stime / TICRATE;
+        _g->cnt_par = _g->wbs->partime / TICRATE;
         S_StartSound(0, sfx_barexp);
-        _g->sp_state++;
-      }
+        _g->sp_state = 10;
     }
-  }
-  else if (_g->sp_state == 10)
-  {
-    if (_g->acceleratestage)
-    {
-      S_StartSound(0, sfx_sgcock);
 
-      if (_g->gamemode == commercial)
-        WI_initNoState();
-      else
-        WI_initShowNextLoc();
-    }
-  }
-  else if (_g->sp_state & 1)
-  {
-    if (!--_g->cnt_pause)
+    if (_g->sp_state == 2)
     {
-      _g->sp_state++;
-      _g->cnt_pause = TICRATE;
+        _g->cnt_kills += 2;
+
+        if (!(_g->bcnt&3))
+            S_StartSound(0, sfx_pistol);
+
+        if (_g->cnt_kills >= (_g->plrs[0].skills * 100) / _g->wbs->maxkills)
+        {
+            _g->cnt_kills = (_g->plrs[0].skills * 100) / _g->wbs->maxkills;
+            S_StartSound(0, sfx_barexp);
+            _g->sp_state++;
+        }
     }
-  }
+    else if (_g->sp_state == 4)
+    {
+        _g->cnt_items += 2;
+
+        if (!(_g->bcnt&3))
+            S_StartSound(0, sfx_pistol);
+
+        if (_g->cnt_items >= (_g->plrs[0].sitems * 100) / _g->wbs->maxitems)
+        {
+            _g->cnt_items = (_g->plrs[0].sitems * 100) / _g->wbs->maxitems;
+            S_StartSound(0, sfx_barexp);
+            _g->sp_state++;
+        }
+    }
+    else if (_g->sp_state == 6)
+    {
+        _g->cnt_secret += 2;
+
+        if (!(_g->bcnt&3))
+            S_StartSound(0, sfx_pistol);
+
+        // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
+        if (_g->cnt_secret >= (_g->wbs->maxsecret ? (_g->plrs[0].ssecret * 100) / _g->wbs->maxsecret : 100))
+        {
+            _g->cnt_secret = (_g->wbs->maxsecret ?
+                                  (_g->plrs[0].ssecret * 100) / _g->wbs->maxsecret : 100);
+            S_StartSound(0, sfx_barexp);
+            _g->sp_state++;
+        }
+    }
+    else if (_g->sp_state == 8)
+    {
+        if (!(_g->bcnt&3))
+            S_StartSound(0, sfx_pistol);
+
+        _g->cnt_time += 3;
+
+        if (_g->cnt_time >= _g->plrs[0].stime / TICRATE)
+            _g->cnt_time = _g->plrs[0].stime / TICRATE;
+
+        _g->cnt_total_time += 3;
+
+        if (_g->cnt_total_time >= _g->wbs->totaltimes / TICRATE)
+            _g->cnt_total_time = _g->wbs->totaltimes / TICRATE;
+
+        _g->cnt_par += 3;
+
+        if (_g->cnt_par >= _g->wbs->partime / TICRATE)
+        {
+            _g->cnt_par = _g->wbs->partime / TICRATE;
+
+            if ((_g->cnt_time >= _g->plrs[0].stime / TICRATE) && (_g->cnt_total_time >= _g->wbs->totaltimes / TICRATE))
+            {
+                S_StartSound(0, sfx_barexp);
+                _g->sp_state++;
+            }
+        }
+    }
+    else if (_g->sp_state == 10)
+    {
+        if (_g->acceleratestage)
+        {
+            S_StartSound(0, sfx_sgcock);
+
+            if (_g->gamemode == commercial)
+                WI_initNoState();
+            else
+                WI_initShowNextLoc();
+        }
+    }
+    else if (_g->sp_state & 1)
+    {
+        if (!--_g->cnt_pause)
+        {
+            _g->sp_state++;
+            _g->cnt_pause = TICRATE;
+        }
+    }
 }
 
 // ====================================================================
@@ -895,31 +876,31 @@ void WI_updateStats(void)
 // CPhipps - patch drawing updated
 void WI_drawStats(void)
 {
-  // line height
-  int lh;
+    // line height
+    int lh;
 
-  lh = (3*_g->num[0]->height)/2;
+    lh = (3*_g->num[0]->height)/2;
 
-  WI_slamBackground();
+    WI_slamBackground();
 
-  // draw animated background
-  WI_drawAnimatedBack();
+    // draw animated background
+    WI_drawAnimatedBack();
 
-  WI_drawLF();
+    WI_drawLF();
 
-  V_DrawNamePatch(SP_STATSX, SP_STATSY, FB, kills, CR_DEFAULT, VPT_STRETCH);
-  if (_g->cnt_kills)
-    WI_drawPercent(320 - SP_STATSX, SP_STATSY, _g->cnt_kills);
+    V_DrawNamePatch(SP_STATSX, SP_STATSY, FB, kills);
+    if (_g->cnt_kills)
+        WI_drawPercent(320 - SP_STATSX, SP_STATSY, _g->cnt_kills);
 
-  V_DrawNamePatch(SP_STATSX, SP_STATSY+lh, FB, items, CR_DEFAULT, VPT_STRETCH);
-  if (_g->cnt_items)
-    WI_drawPercent(320 - SP_STATSX, SP_STATSY+lh, _g->cnt_items);
+    V_DrawNamePatch(SP_STATSX, SP_STATSY+lh, FB, items);
+    if (_g->cnt_items)
+        WI_drawPercent(320 - SP_STATSX, SP_STATSY+lh, _g->cnt_items);
 
-  V_DrawNamePatch(SP_STATSX, SP_STATSY+2*lh, FB, sp_secret, CR_DEFAULT, VPT_STRETCH);
-  if (_g->cnt_secret)
-    WI_drawPercent(320 - SP_STATSX, SP_STATSY+2*lh, _g->cnt_secret);
+    V_DrawNamePatch(SP_STATSX, SP_STATSY+2*lh, FB, sp_secret);
+    if (_g->cnt_secret)
+        WI_drawPercent(320 - SP_STATSX, SP_STATSY+2*lh, _g->cnt_secret);
 
-  WI_drawTimeStats(_g->cnt_time, _g->cnt_total_time, _g->cnt_par);
+    WI_drawTimeStats(_g->cnt_time, _g->cnt_total_time, _g->cnt_par);
 }
 
 // ====================================================================
@@ -932,27 +913,27 @@ void WI_drawStats(void)
 //
 void WI_checkForAccelerate(void)
 {
-  player_t  *player = &_g->player;
+    player_t  *player = &_g->player;
 
     if (_g->playeringame)
     {
-      if (player->cmd.buttons & BT_ATTACK)
-      {
-        if (!player->attackdown)
-          _g->acceleratestage = 1;
-        player->attackdown = true;
-      }
-      else
-        player->attackdown = false;
+        if (player->cmd.buttons & BT_ATTACK)
+        {
+            if (!player->attackdown)
+                _g->acceleratestage = 1;
+            player->attackdown = true;
+        }
+        else
+            player->attackdown = false;
 
-      if (player->cmd.buttons & BT_USE)
-      {
-        if (!player->usedown)
-          _g->acceleratestage = 1;
-        player->usedown = true;
-      }
-      else
-        player->usedown = false;
+        if (player->cmd.buttons & BT_USE)
+        {
+            if (!player->usedown)
+                _g->acceleratestage = 1;
+            player->usedown = true;
+        }
+        else
+            player->usedown = false;
     }
 }
 
@@ -965,34 +946,34 @@ void WI_checkForAccelerate(void)
 //
 void WI_Ticker(void)
 {
-  // counter for general background animation
-  _g->bcnt++;
+    // counter for general background animation
+    _g->bcnt++;
 
-  if (_g->bcnt == 1)
-  {
-    // intermission music
-    if ( _g->gamemode == commercial )
-      S_ChangeMusic(mus_dm2int, true);
-    else
-      S_ChangeMusic(mus_inter, true);
-  }
+    if (_g->bcnt == 1)
+    {
+        // intermission music
+        if ( _g->gamemode == commercial )
+            S_ChangeMusic(mus_dm2int, true);
+        else
+            S_ChangeMusic(mus_inter, true);
+    }
 
-  WI_checkForAccelerate();
+    WI_checkForAccelerate();
 
-  switch (_g->state)
-  {
+    switch (_g->state)
+    {
     case StatCount:
-         WI_updateStats();
-         break;
+        WI_updateStats();
+        break;
 
     case ShowNextLoc:
-         WI_updateShowNextLoc();
-         break;
+        WI_updateShowNextLoc();
+        break;
 
     case NoState:
-         WI_updateNoState();
-         break;
-  }
+        WI_updateNoState();
+        break;
+    }
 }
 
 /* ====================================================================
@@ -1009,18 +990,18 @@ void WI_Ticker(void)
 
 void WI_loadData(void)
 {
-  int   i;
-  char  name[9];  // limited to 8 characters
+    int   i;
+    char  name[9];  // limited to 8 characters
 
 
 
-  for (i=0;i<10;i++)
-  {
-    // numbers 0-9
-    sprintf(name, "WINUM%d", i);
+    for (i=0;i<10;i++)
+    {
+        // numbers 0-9
+        sprintf(name, "WINUM%d", i);
 
-    _g->num[i] = W_CacheLumpName(name);
-  }
+        _g->num[i] = W_CacheLumpName(name);
+    }
 }
 
 
@@ -1033,20 +1014,20 @@ void WI_loadData(void)
 //
 void WI_Drawer (void)
 {
-  switch (_g->state)
-  {
+    switch (_g->state)
+    {
     case StatCount:
-           WI_drawStats();
-         break;
+        WI_drawStats();
+        break;
 
     case ShowNextLoc:
-         WI_drawShowNextLoc();
-         break;
+        WI_drawShowNextLoc();
+        break;
 
     case NoState:
-         WI_drawNoState();
-         break;
-  }
+        WI_drawNoState();
+        break;
+    }
 }
 
 
@@ -1060,21 +1041,21 @@ void WI_Drawer (void)
 void WI_initVariables(wbstartstruct_t* wbstartstruct)
 {
 
-  _g->wbs = wbstartstruct;
+    _g->wbs = wbstartstruct;
 
-  _g->acceleratestage = 0;
-  _g->cnt = _g->bcnt = 0;
-  _g->plrs = _g->wbs->plyr;
+    _g->acceleratestage = 0;
+    _g->cnt = _g->bcnt = 0;
+    _g->plrs = _g->wbs->plyr;
 
-  if (!_g->wbs->maxkills)
-    _g->wbs->maxkills = 1;  // probably only useful in MAP30
+    if (!_g->wbs->maxkills)
+        _g->wbs->maxkills = 1;  // probably only useful in MAP30
 
-  if (!_g->wbs->maxitems)
-    _g->wbs->maxitems = 1;
+    if (!_g->wbs->maxitems)
+        _g->wbs->maxitems = 1;
 
-  if ( _g->gamemode != retail )
-    if (_g->wbs->epsd > 2)
-      _g->wbs->epsd -= 3;
+    if ( _g->gamemode != retail )
+        if (_g->wbs->epsd > 2)
+            _g->wbs->epsd -= 3;
 }
 
 // ====================================================================
@@ -1087,8 +1068,8 @@ void WI_initVariables(wbstartstruct_t* wbstartstruct)
 //
 void WI_Start(wbstartstruct_t* wbstartstruct)
 {
-  WI_initVariables(wbstartstruct);
-  WI_loadData();
+    WI_initVariables(wbstartstruct);
+    WI_loadData();
 
     WI_initStats();
 }

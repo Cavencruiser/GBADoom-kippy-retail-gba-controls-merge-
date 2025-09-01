@@ -46,8 +46,6 @@
     #include <time.h>
 #endif
 
-#include "doomstat.h"
-#include "d_net.h"
 #include "w_wad.h"
 #include "r_main.h"
 #include "r_things.h"
@@ -58,9 +56,7 @@
 #include "v_video.h"
 #include "lprintf.h"
 #include "st_stuff.h"
-#include "i_main.h"
 #include "i_system.h"
-#include "g_game.h"
 #include "m_random.h"
 
 #include "global_data.h"
@@ -302,12 +298,22 @@ inline fixed_t CONSTFUNC FixedMul(fixed_t a, fixed_t b)
     return (fixed_t)((int_64_t) a*b >> FRACBITS);
 }
 
-static inline CONSTFUNC int min(int x, int y)
+//This is a hack. I want FixedMul inlined only in this file. Sorry, not sorry.
+
+static __attribute__((always_inline)) fixed_t FixedMulInline(fixed_t a, fixed_t b)
+{
+    return (fixed_t)((int_64_t) a*b >> FRACBITS);
+}
+
+#define FixedMul FixedMulInline
+
+
+static __attribute__((always_inline)) int min(int x, int y)
 {
     return x < y ? x : y;
 }
 
-static inline CONSTFUNC int max(int x, int y)
+static __attribute__((always_inline)) int max(int x, int y)
 {
     return x > y ? x : y;
 }
@@ -3182,16 +3188,6 @@ void P_RunThinkers (void)
     }
 }
 
-
-
-static int I_GetTime_e32(void)
-{
-    int thistimereply = *((unsigned short*)(0x400010C));
-
-    return thistimereply;
-}
-
-
 int I_GetTime(void)
 {
     int thistimereply;
@@ -3202,13 +3198,11 @@ int I_GetTime(void)
 
     thistimereply = (int)((double)now / ((double)CLOCKS_PER_SEC / (double)TICRATE));
 #else
-    thistimereply = I_GetTime_e32();
+    thistimereply = *((unsigned short*)(0x400010C));
 #endif
 
     if (thistimereply < _g->lasttimereply)
-    {
         _g->basetime -= 0xffff;
-    }
 
     _g->lasttimereply = thistimereply;
 

@@ -35,18 +35,11 @@
 
 
 #include <sys/stat.h>
-#include <errno.h>
-
-#include "doomtype.h"
+#include <stdio.h>
 #include "m_fixed.h"
 #include "i_system.h"
-#include "doomdef.h"
-#include "lprintf.h"
 
 #include "i_system.h"
-#include "i_system_e32.h"
-
-#include "global_data.h"
 
 
 /* cphipps - I_GetVersionString

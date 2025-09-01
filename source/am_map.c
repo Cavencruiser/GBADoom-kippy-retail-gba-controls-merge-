@@ -38,15 +38,10 @@
 
 #include "doomstat.h"
 #include "st_stuff.h"
-#include "r_main.h"
-#include "p_setup.h"
-#include "p_maputl.h"
-#include "w_wad.h"
 #include "v_video.h"
 #include "p_spec.h"
 #include "am_map.h"
 #include "dstrings.h"
-#include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "g_game.h"
 
 #include "global_data.h"
@@ -114,13 +109,13 @@ typedef struct
 #define R ((8*PLAYERRADIUS)/7)
 static const mline_t player_arrow[] =
 {
-  { { -R+R/8, 0 }, { R, 0 } }, // -----
-  { { R, 0 }, { R-R/2, R/4 } },  // ----->
-  { { R, 0 }, { R-R/2, -R/4 } },
-  { { -R+R/8, 0 }, { -R-R/8, R/4 } }, // >---->
-  { { -R+R/8, 0 }, { -R-R/8, -R/4 } },
-  { { -R+3*R/8, 0 }, { -R+R/8, R/4 } }, // >>--->
-  { { -R+3*R/8, 0 }, { -R+R/8, -R/4 } }
+    { { -R+R/8, 0 }, { R, 0 } }, // -----
+    { { R, 0 }, { R-R/2, R/4 } },  // ----->
+    { { R, 0 }, { R-R/2, -R/4 } },
+    { { -R+R/8, 0 }, { -R-R/8, R/4 } }, // >---->
+    { { -R+R/8, 0 }, { -R-R/8, -R/4 } },
+    { { -R+3*R/8, 0 }, { -R+R/8, R/4 } }, // >>--->
+    { { -R+3*R/8, 0 }, { -R+R/8, -R/4 } }
 };
 #undef R
 #define NUMPLYRLINES (sizeof(player_arrow)/sizeof(mline_t))
@@ -280,7 +275,7 @@ void AM_Stop (void)
 {
     static const event_t st_notify = { 0, ev_keyup, AM_MSGEXITED, 0 };
 
-    _g->automapmode  = 0;
+    _g->automapmode  = am_none;
     ST_Responder(&st_notify);
     _g->stopped = true;
 }

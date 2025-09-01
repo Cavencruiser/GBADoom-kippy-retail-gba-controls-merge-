@@ -31,13 +31,10 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include "doomstat.h"
 #include "r_main.h"
 #include "p_map.h"
 #include "p_maputl.h"
-#include "p_setup.h"
 #include "m_bbox.h"
-#include "lprintf.h"
 
 #include "global_data.h"
 
@@ -56,48 +53,48 @@ bool P_CrossBSPNode(int bspnum);
 
 bool P_CheckSight(mobj_t *t1, mobj_t *t2)
 {
-  const sector_t *s1 = t1->subsector->sector;
-  const sector_t *s2 = t2->subsector->sector;
-  int pnum = (s1-_g->sectors)*_g->numsectors + (s2-_g->sectors);
+    const sector_t *s1 = t1->subsector->sector;
+    const sector_t *s2 = t2->subsector->sector;
+    int pnum = (s1-_g->sectors)*_g->numsectors + (s2-_g->sectors);
 
-  // First check for trivial rejection.
-  // Determine subsector entries in REJECT table.
-  //
-  // Check in REJECT table.
+    // First check for trivial rejection.
+    // Determine subsector entries in REJECT table.
+    //
+    // Check in REJECT table.
 
-  if (_g->rejectmatrix[pnum>>3] & (1 << (pnum&7)))   // can't possibly be connected
-    return false;
+    if (_g->rejectmatrix[pnum>>3] & (1 << (pnum&7)))   // can't possibly be connected
+        return false;
 
-  /* killough 11/98: shortcut for melee situations
+    /* killough 11/98: shortcut for melee situations
    * same subsector? obviously visible
    * cph - compatibility optioned for demo sync, cf HR06-UV.LMP */
-  if (t1->subsector == t2->subsector)
-    return true;
+    if (t1->subsector == t2->subsector)
+        return true;
 
-  // An unobstructed LOS is possible.
-  // Now look from eyes of t1 to any part of t2.
+    // An unobstructed LOS is possible.
+    // Now look from eyes of t1 to any part of t2.
 
-  _g->validcount++;
+    _g->validcount++;
 
-  _g->los.topslope = (_g->los.bottomslope = t2->z - (_g->los.sightzstart =
-                                             t1->z + t1->height -
-                                             (t1->height>>2))) + t2->height;
-  _g->los.strace.dx = (_g->los.t2x = t2->x) - (_g->los.strace.x = t1->x);
-  _g->los.strace.dy = (_g->los.t2y = t2->y) - (_g->los.strace.y = t1->y);
+    _g->los.topslope = (_g->los.bottomslope = t2->z - (_g->los.sightzstart =
+            t1->z + t1->height -
+            (t1->height>>2))) + t2->height;
+    _g->los.strace.dx = (_g->los.t2x = t2->x) - (_g->los.strace.x = t1->x);
+    _g->los.strace.dy = (_g->los.t2y = t2->y) - (_g->los.strace.y = t1->y);
 
-  if (t1->x > t2->x)
-    _g->los.bbox[BOXRIGHT] = t1->x, _g->los.bbox[BOXLEFT] = t2->x;
-  else
-    _g->los.bbox[BOXRIGHT] = t2->x, _g->los.bbox[BOXLEFT] = t1->x;
+    if (t1->x > t2->x)
+        _g->los.bbox[BOXRIGHT] = t1->x, _g->los.bbox[BOXLEFT] = t2->x;
+    else
+        _g->los.bbox[BOXRIGHT] = t2->x, _g->los.bbox[BOXLEFT] = t1->x;
 
-  if (t1->y > t2->y)
-    _g->los.bbox[BOXTOP] = t1->y, _g->los.bbox[BOXBOTTOM] = t2->y;
-  else
-    _g->los.bbox[BOXTOP] = t2->y, _g->los.bbox[BOXBOTTOM] = t1->y;
+    if (t1->y > t2->y)
+        _g->los.bbox[BOXTOP] = t1->y, _g->los.bbox[BOXBOTTOM] = t2->y;
+    else
+        _g->los.bbox[BOXTOP] = t2->y, _g->los.bbox[BOXBOTTOM] = t1->y;
 
 
     _g->los.maxz = INT_MAX; _g->los.minz = INT_MIN;
 
-  // the head node is the last node output
-  return P_CrossBSPNode(numnodes-1);
+    // the head node is the last node output
+    return P_CrossBSPNode(numnodes-1);
 }

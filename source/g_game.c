@@ -44,9 +44,7 @@
 #endif
 
 #include "doomstat.h"
-#include "d_net.h"
 #include "f_finale.h"
-#include "m_misc.h"
 #include "m_menu.h"
 #include "m_random.h"
 #include "p_setup.h"
@@ -58,18 +56,14 @@
 #include "st_stuff.h"
 #include "am_map.h"
 #include "w_wad.h"
-#include "r_main.h"
-#include "r_draw.h"
 #include "p_map.h"
 #include "s_sound.h"
 #include "dstrings.h"
-#include "sounds.h"
 #include "r_data.h"
 #include "r_sky.h"
 #include "p_inter.h"
 #include "g_game.h"
 #include "lprintf.h"
-#include "i_main.h"
 #include "i_system.h"
 
 #include "global_data.h"
@@ -380,7 +374,7 @@ static void G_DoLoadLevel (void)
     NULL_BLOCK_MEMORY_ALLOC_ZONE(secnodezone);
 
 
-    P_SetupLevel (_g->gameepisode, _g->gamemap, 0, _g->gameskill);
+    P_SetupLevel (_g->gameepisode, _g->gamemap);
 
     _g->gameaction = ga_nothing;
     Z_CheckHeap ();

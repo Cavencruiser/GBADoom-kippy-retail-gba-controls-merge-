@@ -36,28 +36,17 @@
 #include "config.h"
 #endif
 
-#include <stdlib.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
-#include <math.h>
-
-#include "doomstat.h"
 #include "doomdef.h"
 #include "doomtype.h"
 #include "v_video.h"
 #include "r_draw.h"
-#include "d_main.h"
-#include "d_event.h"
 #include "i_video.h"
-#include "i_sound.h"
-#include "z_zone.h"
-#include "s_sound.h"
-#include "sounds.h"
 #include "w_wad.h"
-#include "st_stuff.h"
 #include "lprintf.h"
 
 #include "i_system_e32.h"

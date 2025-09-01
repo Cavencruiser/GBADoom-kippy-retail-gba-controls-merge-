@@ -88,9 +88,7 @@ void V_FillRect(int x, int y, int width, int height, byte colour);
 // Consolidated into the 3 really useful functions:
 
 // V_DrawNumPatch - Draws the patch from lump num
-void V_DrawNumPatch(int x, int y, int scrn,
-                                 int lump, int cm,
-                                 enum patch_translation_e flags);
+void V_DrawNumPatch(int x, int y, int scrn, int lump);
 
 
 void V_DrawPatch(int x, int y, int scrn, const patch_t* patch);
@@ -99,7 +97,7 @@ void V_DrawPatchNoScale(int x, int y, const patch_t* patch);
 
 
 // V_DrawNamePatch - Draws the patch from lump "name"
-#define V_DrawNamePatch(x,y,s,n,t,f) V_DrawNumPatch(x,y,s,W_GetNumForName(n),t,f)
+#define V_DrawNamePatch(x,y,s,n) V_DrawNumPatch(x,y,s,W_GetNumForName(n))
 
 /* cph -
  * Functions to return width & height of a patch.

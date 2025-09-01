@@ -36,13 +36,9 @@
  */
 
 #include "doomdef.h"
-#include "r_main.h"
-#include "r_draw.h"
-#include "m_bbox.h"
 #include "w_wad.h"   /* needed for color translation lump lookup */
 #include "v_video.h"
 #include "i_video.h"
-#include "lprintf.h"
 
 #include "global_data.h"
 #include "gba_functions.h"
@@ -181,8 +177,7 @@ void V_DrawPatch(int x, int y, int scrn, const patch_t* patch)
 // static inline; other compilers have different behaviour.
 // This inline is _only_ for the function below
 
-void V_DrawNumPatch(int x, int y, int scrn, int lump,
-         int cm, enum patch_translation_e flags)
+void V_DrawNumPatch(int x, int y, int scrn, int lump)
 {
     V_DrawPatch(x, y, scrn, W_CacheLumpNum(lump));
 }

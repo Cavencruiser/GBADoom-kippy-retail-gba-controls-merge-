@@ -32,15 +32,11 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include <math.h>
 
-#include "doomstat.h"
 #include "m_bbox.h"
-#include "g_game.h"
 #include "w_wad.h"
 #include "r_main.h"
 #include "r_things.h"
-#include "p_maputl.h"
 #include "p_map.h"
 #include "p_setup.h"
 #include "p_spec.h"
@@ -48,7 +44,6 @@
 #include "p_enemy.h"
 #include "s_sound.h"
 #include "lprintf.h" //jff 10/6/98 for debug outputs
-#include "v_video.h"
 
 #include "global_data.h"
 
@@ -59,12 +54,12 @@
 //
 static void P_LoadVertexes (int lump)
 {
-  // Determine number of lumps:
-  //  total lump length / vertex record length.
-  _g->numvertexes = W_LumpLength(lump) / sizeof(vertex_t);
+    // Determine number of lumps:
+    //  total lump length / vertex record length.
+    _g->numvertexes = W_LumpLength(lump) / sizeof(vertex_t);
 
-  // Allocate zone memory for buffer.
-  _g->vertexes = W_CacheLumpNum(lump);
+    // Allocate zone memory for buffer.
+    _g->vertexes = W_CacheLumpNum(lump);
 
 }
 
@@ -79,7 +74,7 @@ static void P_LoadSegs (int lump)
     _g->segs = (const seg_t *)W_CacheLumpNum(lump);
 
     if (!numsegs)
-      I_Error("P_LoadSegs: no segs in level");
+        I_Error("P_LoadSegs: no segs in level");
 }
 
 //
@@ -89,22 +84,22 @@ static void P_LoadSegs (int lump)
 
 static void P_LoadSubsectors (int lump)
 {
-  /* cph 2006/07/29 - make data a const mapsubsector_t *, so the loop below is simpler & gives no constness warnings */
-  const mapsubsector_t *data;
-  int  i;
+    /* cph 2006/07/29 - make data a const mapsubsector_t *, so the loop below is simpler & gives no constness warnings */
+    const mapsubsector_t *data;
+    int  i;
 
-  _g->numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_t);
-  _g->subsectors = Z_Calloc(_g->numsubsectors,sizeof(subsector_t),PU_LEVEL,0);
-  data = (const mapsubsector_t *)W_CacheLumpNum(lump);
+    _g->numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_t);
+    _g->subsectors = Z_Calloc(_g->numsubsectors,sizeof(subsector_t),PU_LEVEL,0);
+    data = (const mapsubsector_t *)W_CacheLumpNum(lump);
 
-  if ((!data) || (!_g->numsubsectors))
-    I_Error("P_LoadSubsectors: no subsectors in level");
+    if ((!data) || (!_g->numsubsectors))
+        I_Error("P_LoadSubsectors: no subsectors in level");
 
-  for (i=0; i<_g->numsubsectors; i++)
-  {
-    _g->subsectors[i].numlines  = (unsigned short)SHORT(data[i].numsegs );
-    _g->subsectors[i].firstline = (unsigned short)SHORT(data[i].firstseg);
-  }
+    for (i=0; i<_g->numsubsectors; i++)
+    {
+        _g->subsectors[i].numlines  = (unsigned short)SHORT(data[i].numsegs );
+        _g->subsectors[i].firstline = (unsigned short)SHORT(data[i].firstseg);
+    }
 }
 
 //
@@ -114,30 +109,30 @@ static void P_LoadSubsectors (int lump)
 
 static void P_LoadSectors (int lump)
 {
-  const byte *data; // cph - const*
-  int  i;
+    const byte *data; // cph - const*
+    int  i;
 
-  _g->numsectors = W_LumpLength (lump) / sizeof(mapsector_t);
-  _g->sectors = Z_Calloc (_g->numsectors,sizeof(sector_t),PU_LEVEL,0);
-  data = W_CacheLumpNum (lump); // cph - wad lump handling updated
+    _g->numsectors = W_LumpLength (lump) / sizeof(mapsector_t);
+    _g->sectors = Z_Calloc (_g->numsectors,sizeof(sector_t),PU_LEVEL,0);
+    data = W_CacheLumpNum (lump); // cph - wad lump handling updated
 
-  for (i=0; i<_g->numsectors; i++)
+    for (i=0; i<_g->numsectors; i++)
     {
-      sector_t *ss = _g->sectors + i;
-      const mapsector_t *ms = (const mapsector_t *) data + i;
+        sector_t *ss = _g->sectors + i;
+        const mapsector_t *ms = (const mapsector_t *) data + i;
 
-      ss->floorheight = SHORT(ms->floorheight)<<FRACBITS;
-      ss->ceilingheight = SHORT(ms->ceilingheight)<<FRACBITS;
-      ss->floorpic = R_FlatNumForName(ms->floorpic);
-      ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
+        ss->floorheight = SHORT(ms->floorheight)<<FRACBITS;
+        ss->ceilingheight = SHORT(ms->ceilingheight)<<FRACBITS;
+        ss->floorpic = R_FlatNumForName(ms->floorpic);
+        ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
 
-      ss->lightlevel = SHORT(ms->lightlevel);
-      ss->special = SHORT(ms->special);
-      ss->oldspecial = SHORT(ms->special);
-      ss->tag = SHORT(ms->tag);
+        ss->lightlevel = SHORT(ms->lightlevel);
+        ss->special = SHORT(ms->special);
+        ss->oldspecial = SHORT(ms->special);
+        ss->tag = SHORT(ms->tag);
 
-      ss->thinglist = NULL;
-      ss->touching_thinglist = NULL;            // phares 3/14/98
+        ss->thinglist = NULL;
+        ss->touching_thinglist = NULL;            // phares 3/14/98
     }
 }
 
@@ -149,17 +144,17 @@ static void P_LoadSectors (int lump)
 
 static void P_LoadNodes (int lump)
 {
-  numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
-  nodes = W_CacheLumpNum (lump); // cph - wad lump handling updated
+    numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
+    nodes = W_CacheLumpNum (lump); // cph - wad lump handling updated
 
-  if ((!nodes) || (!numnodes))
-  {
-    // allow trivial maps
-    if (_g->numsubsectors == 1)
-      lprintf("P_LoadNodes: trivial map (no nodes, one subsector)\n");
-    else
-      I_Error("P_LoadNodes: no nodes in level");
-  }
+    if ((!nodes) || (!numnodes))
+    {
+        // allow trivial maps
+        if (_g->numsubsectors == 1)
+            lprintf("P_LoadNodes: trivial map (no nodes, one subsector)\n");
+        else
+            I_Error("P_LoadNodes: no nodes in level");
+    }
 }
 
 
@@ -232,8 +227,8 @@ static void P_LoadLineDefs (int lump)
 
 static void P_LoadSideDefs (int lump)
 {
-  _g->numsides = W_LumpLength(lump) / sizeof(mapsidedef_t);
-  _g->sides = Z_Calloc(_g->numsides,sizeof(side_t),PU_LEVEL,0);
+    _g->numsides = W_LumpLength(lump) / sizeof(mapsidedef_t);
+    _g->sides = Z_Calloc(_g->numsides,sizeof(side_t),PU_LEVEL,0);
 }
 
 // killough 4/4/98: delay using texture names until
@@ -283,13 +278,13 @@ static void P_LoadSideDefs2(int lump)
 #define blkshift 7               /* places to shift rel position for cell num */
 #define blkmask ((1<<blkshift)-1)/* mask for rel position within cell */
 #define blkmargin 0              /* size guardband around map used */
-                                 // jff 10/8/98 use guardband>0
-                                 // jff 10/12/98 0 ok with + 1 in rows,cols
+// jff 10/8/98 use guardband>0
+// jff 10/12/98 0 ok with + 1 in rows,cols
 
 typedef struct linelist_t        // type used to list lines in each block
 {
-  long num;
-  struct linelist_t *next;
+    long num;
+    struct linelist_t *next;
 } linelist_t;
 
 //
@@ -331,8 +326,8 @@ static void P_LoadBlockMap (int lump)
 
 static void P_LoadReject(int lumpnum)
 {
-  _g->rejectlump = lumpnum + ML_REJECT;
-  _g->rejectmatrix = W_CacheLumpNum(_g->rejectlump);
+    _g->rejectlump = lumpnum + ML_REJECT;
+    _g->rejectmatrix = W_CacheLumpNum(_g->rejectlump);
 }
 
 //
@@ -348,7 +343,7 @@ static void P_LoadReject(int lumpnum)
 // cph - convenient sub-function
 static void P_AddLineToSector(const line_t* li, sector_t* sector)
 {
-  sector->lines[sector->linecount++] = li;
+    sector->lines[sector->linecount++] = li;
 }
 
 // modified to return totallines (needed by P_LoadReject)
@@ -444,7 +439,7 @@ void P_FreeLevelData()
 //
 // killough 5/3/98: reformatted, cleaned up
 
-void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
+void P_SetupLevel(int episode, int map)
 {
     int   i;
     char  lumpname[9];

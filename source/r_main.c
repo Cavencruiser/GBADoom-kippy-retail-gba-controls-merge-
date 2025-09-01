@@ -38,22 +38,10 @@
 #include "config.h"
 #endif
 
-#include "doomstat.h"
-#include "d_net.h"
-#include "w_wad.h"
 #include "r_main.h"
-#include "r_things.h"
 #include "r_plane.h"
 #include "r_draw.h"
-#include "m_bbox.h"
-#include "r_sky.h"
-#include "v_video.h"
 #include "lprintf.h"
-#include "st_stuff.h"
-#include "i_main.h"
-#include "i_system.h"
-#include "g_game.h"
-
 #include "global_data.h"
 
 // Fineangles in the SCREENWIDTH wide window.
@@ -65,14 +53,14 @@
 
 void R_Init (void)
 {
-  lprintf("R_LoadTrigTables");
-  R_LoadTrigTables();
-  lprintf("R_InitData");
-  R_InitData();
-  lprintf("R_InitPlanes");
-  R_InitPlanes();
-  lprintf("R_InitBuffer");
-  R_InitBuffer();
+    lprintf("R_LoadTrigTables");
+    R_LoadTrigTables();
+    lprintf("R_InitData");
+    R_InitData();
+    lprintf("R_InitPlanes");
+    R_InitPlanes();
+    lprintf("R_InitBuffer");
+    R_InitBuffer();
 }
 
 //
@@ -94,10 +82,7 @@ void R_SetupFrame (player_t *player)
     fullcolormap = &colormaps[0];
 
     if (player->fixedcolormap)
-    {
-        fixedcolormap = fullcolormap   // killough 3/20/98: use fullcolormap
-                + player->fixedcolormap*256*sizeof(lighttable_t);
-    }
+        fixedcolormap = fullcolormap + player->fixedcolormap*256*sizeof(lighttable_t);
     else
         fixedcolormap = 0;
 

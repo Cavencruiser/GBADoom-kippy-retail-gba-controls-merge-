@@ -31,7 +31,6 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include "doomstat.h"
 #include "p_user.h"
 #include "p_spec.h"
 #include "p_tick.h"
@@ -56,7 +55,7 @@
 
 void P_InitThinkers(void)
 {
-  thinkercap.prev = thinkercap.next  = &thinkercap;
+    thinkercap.prev = thinkercap.next  = &thinkercap;
 }
 
 //
@@ -66,10 +65,10 @@ void P_InitThinkers(void)
 
 void P_AddThinker(thinker_t* thinker)
 {
-  thinkercap.prev->next = thinker;
-  thinker->next = &thinkercap;
-  thinker->prev = thinkercap.prev;
-  thinkercap.prev = thinker;
+    thinkercap.prev->next = thinker;
+    thinker->next = &thinkercap;
+    thinker->prev = thinkercap.prev;
+    thinkercap.prev = thinker;
 }
 
 //
@@ -136,12 +135,12 @@ void P_RemoveThingDelayed(thinker_t *thinker, void*)
 
 void P_RemoveThinker(thinker_t *thinker)
 {
-  thinker->function = (think_t)P_RemoveThinkerDelayed;
+    thinker->function = (think_t)P_RemoveThinkerDelayed;
 }
 
 void P_RemoveThing(mobj_t *thing)
 {
-  thing->thinker.function = (think_t)P_RemoveThingDelayed;
+    thing->thinker.function = (think_t)P_RemoveThingDelayed;
 }
 
 
@@ -150,10 +149,10 @@ void P_RemoveThing(mobj_t *thing)
  */
 thinker_t* P_NextThinker(thinker_t* th)
 {
-  thinker_t* top = &_g->thinkerclasscap[th_all];
-  if (!th) th = top;
-  th = th->next;
-  return th == top ? NULL : th;
+    thinker_t* top = &_g->thinkerclasscap[th_all];
+    if (!th) th = top;
+    th = th->next;
+    return th == top ? NULL : th;
 }
 
 /*
@@ -176,7 +175,7 @@ void P_SetTarget(mobj_t **mop, mobj_t *targ)
 
 void P_Ticker (void)
 {
-  /* pause if in menu and at least one tic has been run
+    /* pause if in menu and at least one tic has been run
    *
    * killough 9/29/98: note that this ties in with basetic,
    * since G_Ticker does the pausing during recording or
@@ -185,19 +184,19 @@ void P_Ticker (void)
    * All of this complicated mess is used to preserve demo sync.
    */
 
-  if (_g->menuactive && !_g->demoplayback && _g->player.viewz != 1)
-    return;
+    if (_g->menuactive && !_g->demoplayback && _g->player.viewz != 1)
+        return;
 
-  P_MapStart();
-               // not if this is an intermission screen
-  if(_g->gamestate==GS_LEVEL)
-    if (_g->playeringame)
-      P_PlayerThink(&_g->player);
+    P_MapStart();
+    // not if this is an intermission screen
+    if(_g->gamestate==GS_LEVEL)
+        if (_g->playeringame)
+            P_PlayerThink(&_g->player);
 
-  P_RunThinkers();
-  P_UpdateSpecials();
-  P_RespawnSpecials();
-  P_MapEnd();
-  _g->leveltime++;                       // for par times
+    P_RunThinkers();
+    P_UpdateSpecials();
+    P_RespawnSpecials();
+    P_MapEnd();
+    _g->leveltime++;                       // for par times
 }
 

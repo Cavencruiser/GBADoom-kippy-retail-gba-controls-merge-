@@ -60,6 +60,7 @@ extern  const int       startmap;
 //
 
 enum automapmode_e {
+  am_none   = 0,  // not active
   am_active = 1,  // currently shown
   am_overlay= 2,  // covers the screen, i.e. not overlay mode
   am_rotate = 4,  // rotates to the player facing direction

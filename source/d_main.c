@@ -47,17 +47,13 @@
 #include "d_net.h"
 #include "dstrings.h"
 #include "sounds.h"
-#include "z_zone.h"
 #include "w_wad.h"
 #include "s_sound.h"
 #include "v_video.h"
 #include "f_finale.h"
 #include "f_wipe.h"
-#include "m_misc.h"
 #include "m_menu.h"
-#include "i_main.h"
 #include "i_system.h"
-#include "i_sound.h"
 #include "i_video.h"
 #include "g_game.h"
 #include "hu_stuff.h"
@@ -65,7 +61,6 @@
 #include "st_stuff.h"
 #include "am_map.h"
 #include "p_setup.h"
-#include "r_draw.h"
 #include "r_main.h"
 #include "d_main.h"
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
@@ -106,12 +101,29 @@ static const char* timedemo = NULL;//"demo1";
 
 void D_PostEvent(event_t *ev)
 {
-    /* cph - suppress all input events at game start
-   * FIXME: This is a lousy kludge */
+    // Suppress all input events at game start
     if (_g->gametic < 3)
         return;
 
-    M_Responder(ev) || (_g->gamestate == GS_LEVEL && (C_Responder(ev) || ST_Responder(ev) || AM_Responder(ev))) || G_Responder(ev);
+    // First, let the menu system try to handle the event
+    if (M_Responder(ev))
+        return;
+
+    // If we’re in a level, check console, status bar, and automap
+    if (_g->gamestate == GS_LEVEL)
+    {
+        if (C_Responder(ev))
+            return;
+
+        if (ST_Responder(ev))
+            return;
+
+        if (AM_Responder(ev))
+            return;
+    }
+
+    // Finally, pass it to the general game responder
+    G_Responder(ev);
 }
 
 //
@@ -275,7 +287,7 @@ static void D_DoomLoop(void)
 
         // killough 3/16/98: change consoleplayer to displayplayer
         if (_g->player.mo) // cph 2002/08/10
-            S_UpdateSounds(_g->player.mo);// move positional sounds
+            S_UpdateSounds();// move positional sounds
 
         // Update display, next frame, with current state.
         D_Display();
@@ -336,7 +348,7 @@ static void D_PageDrawer(void)
     // proff - added M_DrawCredits
     if (_g->pagelump)
     {
-        V_DrawNumPatch(0, 0, 0, _g->pagelump, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(0, 0, 0, _g->pagelump);
     }
 }
 
@@ -758,7 +770,7 @@ void GetFirstMap(int *ep, int *map)
     bool newlevel = false;  // Ty 10/04/98 - to test for new level
     int ix;  // index for lookup
 
-    strcpy(name,""); // initialize
+    strcpy(name, ""); // initialize
     if (*map == 0) // unknown so go search for first changed one
     {
         *ep = 1;

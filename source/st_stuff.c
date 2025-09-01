@@ -34,21 +34,13 @@
  *-----------------------------------------------------------------------------*/
 
 #include "doomdef.h"
-#include "doomstat.h"
 #include "m_random.h"
-#include "i_video.h"
 #include "w_wad.h"
 #include "st_stuff.h"
 #include "st_lib.h"
 #include "r_main.h"
 #include "am_map.h"
-#include "s_sound.h"
-#include "sounds.h"
-#include "dstrings.h"
-#include "r_draw.h"
-
 #include "global_data.h"
-
 #include "st_gfx.h"
 
 //
@@ -61,34 +53,34 @@ static void ST_Stop(void);
 //  intercept cheats.
 bool ST_Responder(const event_t *ev)
 {
-  // Filter automap on/off.
-  if (ev->type == ev_keyup && (ev->data1 & 0xffff0000) == AM_MSGHEADER)
+    // Filter automap on/off.
+    if (ev->type == ev_keyup && (ev->data1 & 0xffff0000) == AM_MSGHEADER)
     {
-      switch(ev->data1)
+        switch(ev->data1)
         {
         case AM_MSGENTERED:
-          break;
+            break;
 
         case AM_MSGEXITED:
-          break;
+            break;
         }
     }
 
-  return false;
+    return false;
 }
 
 static int ST_calcPainOffset(void)
 {
-  static int lastcalc;
-  static int oldhealth = -1;
-  int health = _g->player.health > 100 ? 100 : _g->player.health;
+    static int lastcalc;
+    static int oldhealth = -1;
+    int health = _g->player.health > 100 ? 100 : _g->player.health;
 
-  if (health != oldhealth)
+    if (health != oldhealth)
     {
-      lastcalc = ST_FACESTRIDE * (((100 - health) * ST_NUMPAINFACES) / 101);
-      oldhealth = health;
+        lastcalc = ST_FACESTRIDE * (((100 - health) * ST_NUMPAINFACES) / 101);
+        oldhealth = health;
     }
-  return lastcalc;
+    return lastcalc;
 }
 
 //
@@ -101,8 +93,8 @@ static int ST_calcPainOffset(void)
 static void ST_updateFaceWidget(void)
 {
     int         i;
-	angle_t     badguyangle;
-	angle_t     diffang;
+    angle_t     badguyangle;
+    angle_t     diffang;
     static int  lastattackdown = -1;
     static int  priority = 0;
     bool     doevilgrin;
@@ -143,64 +135,64 @@ static void ST_updateFaceWidget(void)
         }
 
     }
-	
-	//Restore the face looking at enemies direction in this SVN... Cause it's handy! ~Kippykip
-	if (priority < 8)
+
+    //Restore the face looking at enemies direction in this SVN... Cause it's handy! ~Kippykip
+    if (priority < 8)
     {
         if (_g->player.damagecount && _g->player.attacker && _g->player.attacker != _g->player.mo)
-		{
-			// being attacked
-			priority = 7;
+        {
+            // being attacked
+            priority = 7;
 
-			// haleyjd 10/12/03: classic DOOM problem of missing OUCH face
-			// was due to inversion of this test:
-			// if(plyr->health - st_oldhealth > ST_MUCHPAIN)
+            // haleyjd 10/12/03: classic DOOM problem of missing OUCH face
+            // was due to inversion of this test:
+            // if(plyr->health - st_oldhealth > ST_MUCHPAIN)
             if(_g->st_oldhealth - _g->player.health > ST_MUCHPAIN)
-			{
-				_g->st_facecount = ST_TURNCOUNT;
-				_g->st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
-			}
-			else
-			{
+            {
+                _g->st_facecount = ST_TURNCOUNT;
+                _g->st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
+            }
+            else
+            {
                 badguyangle = R_PointToAngle2(_g->player.mo->x,
-                _g->player.mo->y,
-                _g->player.attacker->x,
-                _g->player.attacker->y);
+                                              _g->player.mo->y,
+                                              _g->player.attacker->x,
+                                              _g->player.attacker->y);
 
                 if (badguyangle > _g->player.mo->angle)
-				{
-					// whether right or left
+                {
+                    // whether right or left
                     diffang = badguyangle - _g->player.mo->angle;
-					i = diffang > ANG180;
-				}
-				else
-				{
-					// whether left or right
+                    i = diffang > ANG180;
+                }
+                else
+                {
+                    // whether left or right
                     diffang = _g->player.mo->angle - badguyangle;
-					i = diffang <= ANG180;
-				} // confusing, aint it?
+                    i = diffang <= ANG180;
+                } // confusing, aint it?
 
 
-				_g->st_facecount = ST_TURNCOUNT;
-				_g->st_faceindex = ST_calcPainOffset();
+                _g->st_facecount = ST_TURNCOUNT;
+                _g->st_faceindex = ST_calcPainOffset();
 
-				if (diffang < ANG45)
-				{
-					// head-on
-					_g->st_faceindex += ST_RAMPAGEOFFSET;
-				}
-				else if (i)
-				{
-					// turn face right
-					_g->st_faceindex += ST_TURNOFFSET;
-				}
-				else
-				{
-					// turn face left
-					_g->st_faceindex += ST_TURNOFFSET+1;
-				}
-			}
-		}
+                if (diffang < ANG45)
+                {
+                    // head-on
+                    _g->st_faceindex += ST_RAMPAGEOFFSET;
+                }
+                else if (i)
+                {
+                    // turn face right
+                    _g->st_faceindex += ST_TURNOFFSET;
+                }
+                else
+                {
+                    // turn face left
+                    _g->st_faceindex += ST_TURNOFFSET+1;
+                }
+            }
+        }
     }
 
     if (priority < 7)
@@ -275,7 +267,7 @@ static void ST_updateFaceWidget(void)
 
 static void ST_updateWidgets(void)
 {
-    const static int  largeammo = 1994; // means "n/a"
+    static const int  largeammo = 1994; // means "n/a"
     int         i;
 
     if(_g->fps_show)
@@ -304,9 +296,9 @@ static void ST_updateWidgets(void)
 
 void ST_Ticker(void)
 {
-  _g->st_randomnumber = M_Random();
-  ST_updateWidgets();
-  _g->st_oldhealth = _g->player.health;
+    _g->st_randomnumber = M_Random();
+    ST_updateWidgets();
+    _g->st_oldhealth = _g->player.health;
 }
 
 
@@ -354,46 +346,46 @@ static void ST_doPaletteStuff(void)
     }
 }
 
-static void ST_drawWidgets(bool refresh)
+static void ST_drawWidgets()
 {
-    STlib_updateNum(&_g->w_ready, CR_RED, refresh);
-	
-	// Restore the ammo numbers for backpack stats I guess, etc ~Kippykip
-	for (int i=0;i<4;i++)
+    STlib_updateNum(&_g->w_ready);
+
+    // Restore the ammo numbers for backpack stats I guess, etc ~Kippykip
+    for (int i=0;i<4;i++)
     {
-		STlib_updateNum(&_g->w_ammo[i], CR_DEFAULT, refresh);
-		STlib_updateNum(&_g->w_maxammo[i], CR_DEFAULT, refresh);
+        STlib_updateNum(&_g->w_ammo[i]);
+        STlib_updateNum(&_g->w_maxammo[i]);
     }
 
-    STlib_updatePercent(&_g->st_health, CR_RED, refresh);
+    STlib_updatePercent(&_g->st_health);
 
-    STlib_updatePercent(&_g->st_armor, CR_RED, refresh);
+    STlib_updatePercent(&_g->st_armor);
 
-    STlib_updateMultIcon(&_g->w_faces, refresh);
+    STlib_updateMultIcon(&_g->w_faces);
 
     for (int i=0;i<3;i++)
-        STlib_updateMultIcon(&_g->w_keyboxes[i], refresh);
+        STlib_updateMultIcon(&_g->w_keyboxes[i]);
 
     for (int i=0;i<6;i++)
-        STlib_updateMultIcon(&_g->w_arms[i], refresh);
+        STlib_updateMultIcon(&_g->w_arms[i]);
 }
 
 static void ST_doRefresh(void)
 {
-  // draw status bar background to off-screen buff
-  ST_refreshBackground();
+    // draw status bar background to off-screen buff
+    ST_refreshBackground();
 
-  // and refresh all widgets
-  ST_drawWidgets(true);
+    // and refresh all widgets
+    ST_drawWidgets();
 
 }
 
 static bool ST_NeedUpdate()
 {
-	// ready weapon ammo
-	if(_g->w_ready.oldnum != *_g->w_ready.num)
+    // ready weapon ammo
+    if(_g->w_ready.oldnum != *_g->w_ready.num)
         return true;
-	
+
     if(_g->st_health.n.oldnum != *_g->st_health.n.num)
         return true;
 
@@ -402,13 +394,13 @@ static bool ST_NeedUpdate()
 
     if(_g->w_faces.oldinum != *_g->w_faces.inum)
         return true;
-	
-	// ammo
+
+    // ammo
     for(int i=0; i<4; i++)
     {
         if(_g->w_ammo[i].oldnum != *_g->w_ammo[i].num)
             return true;
-		if(_g->w_maxammo[i].oldnum != *_g->w_maxammo[i].num)
+        if(_g->w_maxammo[i].oldnum != *_g->w_maxammo[i].num)
             return true;
     }
 
@@ -473,7 +465,7 @@ void ST_Drawer(bool statusbaron, bool refresh)
 // CPhipps - Loads graphics needed for status bar if doload is true,
 //  unloads them otherwise
 //
-static void ST_loadGraphics(bool doload)
+static void ST_loadGraphics()
 {
     int  i, facenum;
     char namebuf[9];
@@ -482,7 +474,7 @@ static void ST_loadGraphics(bool doload)
     for (i=0;i<10;i++)
     {
         //sprintf(namebuf, "STTNUM%d", i);
-		sprintf(namebuf, "STGANUM%d", i); //Special GBA Doom II Red Numbers ~Kippykip
+        sprintf(namebuf, "STGANUM%d", i); //Special GBA Doom II Red Numbers ~Kippykip
         _g->tallnum[i] = (const patch_t *) W_CacheLumpName(namebuf);
 
         sprintf(namebuf, "STYSNUM%d", i);
@@ -543,7 +535,7 @@ static void ST_loadGraphics(bool doload)
 
 static void ST_loadData(void)
 {
-  ST_loadGraphics(true);
+    ST_loadGraphics();
 }
 
 static void ST_initData(void)
@@ -572,157 +564,157 @@ static void ST_createWidgets(void)
 
     // ready weapon ammo
     STlib_initNum(&_g->w_ready,
-		ST_AMMOX,
-		ST_AMMOY,
-		_g->tallnum,
-        &_g->player.ammo[weaponinfo[_g->player.readyweapon].ammo],
-		&_g->st_statusbaron,
-		ST_AMMOWIDTH );
+                  ST_AMMOX,
+                  ST_AMMOY,
+                  _g->tallnum,
+                  &_g->player.ammo[weaponinfo[_g->player.readyweapon].ammo],
+                  &_g->st_statusbaron,
+                  ST_AMMOWIDTH );
 
     // health percentage
     STlib_initPercent(&_g->st_health,
-			ST_HEALTHX,
-			ST_HEALTHY,
-			_g->tallnum,
-            &_g->player.health,
-			&_g->st_statusbaron,
-			_g->tallpercent);
-					  
+                      ST_HEALTHX,
+                      ST_HEALTHY,
+                      _g->tallnum,
+                      &_g->player.health,
+                      &_g->st_statusbaron,
+                      _g->tallpercent);
+
     // armor percentage - should be colored later
     STlib_initPercent(&_g->st_armor,
-			ST_ARMORX,
-			ST_ARMORY,
-			_g->tallnum,
-            &_g->player.armorpoints,
-			&_g->st_statusbaron, _g->tallpercent);
+                      ST_ARMORX,
+                      ST_ARMORY,
+                      _g->tallnum,
+                      &_g->player.armorpoints,
+                      &_g->st_statusbaron, _g->tallpercent);
 
     // weapons owned
     for(i=0;i<6;i++)
     {
         STlib_initMultIcon(&_g->w_arms[i],
-			ST_ARMSX+(i%3)*ST_ARMSXSPACE,
-			ST_ARMSY+(i/3)*ST_ARMSYSPACE,
-            _g->arms[i], (int*) &_g->player.weaponowned[i+1],
-			&_g->st_statusbaron);
+                           ST_ARMSX+(i%3)*ST_ARMSXSPACE,
+                           ST_ARMSY+(i/3)*ST_ARMSYSPACE,
+                           _g->arms[i], (int*) &_g->player.weaponowned[i+1],
+                           &_g->st_statusbaron);
     }
-	
+
     // keyboxes 0-2
     STlib_initMultIcon(&_g->w_keyboxes[0],
-            ST_KEY0X,
-            ST_KEY0Y,
-            _g->keys,
-            &_g->keyboxes[0],
-            &_g->st_statusbaron);
+                       ST_KEY0X,
+                       ST_KEY0Y,
+                       _g->keys,
+                       &_g->keyboxes[0],
+                       &_g->st_statusbaron);
 
     STlib_initMultIcon(&_g->w_keyboxes[1],
-            ST_KEY1X,
-            ST_KEY1Y,
-            _g->keys,
-            &_g->keyboxes[1],
-            &_g->st_statusbaron);
+                       ST_KEY1X,
+                       ST_KEY1Y,
+                       _g->keys,
+                       &_g->keyboxes[1],
+                       &_g->st_statusbaron);
 
     STlib_initMultIcon(&_g->w_keyboxes[2],
-            ST_KEY2X,
-            ST_KEY2Y,
-            _g->keys,
-            &_g->keyboxes[2],
-            &_g->st_statusbaron);			
-			
-	// ammo count (all four kinds)
-	STlib_initNum(&_g->w_ammo[0],
-			ST_AMMO0X,
-			ST_AMMO0Y,
-			_g->shortnum,
-            &_g->player.ammo[0],
-			&_g->st_statusbaron,
-			ST_AMMO0WIDTH);
+                       ST_KEY2X,
+                       ST_KEY2Y,
+                       _g->keys,
+                       &_g->keyboxes[2],
+                       &_g->st_statusbaron);
 
-	STlib_initNum(&_g->w_ammo[1],
-			ST_AMMO1X,
-			ST_AMMO1Y,
-			_g->shortnum,
-            &_g->player.ammo[1],
-			&_g->st_statusbaron,
-			ST_AMMO1WIDTH);
+    // ammo count (all four kinds)
+    STlib_initNum(&_g->w_ammo[0],
+                  ST_AMMO0X,
+                  ST_AMMO0Y,
+                  _g->shortnum,
+                  &_g->player.ammo[0],
+                  &_g->st_statusbaron,
+                  ST_AMMO0WIDTH);
 
-	STlib_initNum(&_g->w_ammo[2],
-			ST_AMMO2X,
-			ST_AMMO2Y,
-			_g->shortnum,
-            &_g->player.ammo[2],
-			&_g->st_statusbaron,
-			ST_AMMO2WIDTH);
+    STlib_initNum(&_g->w_ammo[1],
+                  ST_AMMO1X,
+                  ST_AMMO1Y,
+                  _g->shortnum,
+                  &_g->player.ammo[1],
+                  &_g->st_statusbaron,
+                  ST_AMMO1WIDTH);
 
-	STlib_initNum(&_g->w_ammo[3],
-			ST_AMMO3X,
-			ST_AMMO3Y,
-			_g->shortnum,
-            &_g->player.ammo[3],
-			&_g->st_statusbaron,
-			ST_AMMO3WIDTH);
+    STlib_initNum(&_g->w_ammo[2],
+                  ST_AMMO2X,
+                  ST_AMMO2Y,
+                  _g->shortnum,
+                  &_g->player.ammo[2],
+                  &_g->st_statusbaron,
+                  ST_AMMO2WIDTH);
 
-	// max ammo count (all four kinds)
-	STlib_initNum(&_g->w_maxammo[0],
-			ST_MAXAMMO0X,
-			ST_MAXAMMO0Y,
-			_g->shortnum,
-            &_g->player.maxammo[0],
-			&_g->st_statusbaron,
-			ST_MAXAMMO0WIDTH);
+    STlib_initNum(&_g->w_ammo[3],
+                  ST_AMMO3X,
+                  ST_AMMO3Y,
+                  _g->shortnum,
+                  &_g->player.ammo[3],
+                  &_g->st_statusbaron,
+                  ST_AMMO3WIDTH);
 
-	STlib_initNum(&_g->w_maxammo[1],
-			ST_MAXAMMO1X,
-			ST_MAXAMMO1Y,
-			_g->shortnum,
-            &_g->player.maxammo[1],
-			&_g->st_statusbaron,
-			ST_MAXAMMO1WIDTH);
+    // max ammo count (all four kinds)
+    STlib_initNum(&_g->w_maxammo[0],
+                  ST_MAXAMMO0X,
+                  ST_MAXAMMO0Y,
+                  _g->shortnum,
+                  &_g->player.maxammo[0],
+                  &_g->st_statusbaron,
+                  ST_MAXAMMO0WIDTH);
 
-	STlib_initNum(&_g->w_maxammo[2],
-			ST_MAXAMMO2X,
-			ST_MAXAMMO2Y,
-			_g->shortnum,
-            &_g->player.maxammo[2],
-			&_g->st_statusbaron,
-			ST_MAXAMMO2WIDTH);
+    STlib_initNum(&_g->w_maxammo[1],
+                  ST_MAXAMMO1X,
+                  ST_MAXAMMO1Y,
+                  _g->shortnum,
+                  &_g->player.maxammo[1],
+                  &_g->st_statusbaron,
+                  ST_MAXAMMO1WIDTH);
 
-	STlib_initNum(&_g->w_maxammo[3],
-			ST_MAXAMMO3X,
-			ST_MAXAMMO3Y,
-			_g->shortnum,
-            &_g->player.maxammo[3],
-			&_g->st_statusbaron,
-			ST_MAXAMMO3WIDTH);
-			
+    STlib_initNum(&_g->w_maxammo[2],
+                  ST_MAXAMMO2X,
+                  ST_MAXAMMO2Y,
+                  _g->shortnum,
+                  &_g->player.maxammo[2],
+                  &_g->st_statusbaron,
+                  ST_MAXAMMO2WIDTH);
+
+    STlib_initNum(&_g->w_maxammo[3],
+                  ST_MAXAMMO3X,
+                  ST_MAXAMMO3Y,
+                  _g->shortnum,
+                  &_g->player.maxammo[3],
+                  &_g->st_statusbaron,
+                  ST_MAXAMMO3WIDTH);
+
     // faces
     STlib_initMultIcon(&_g->w_faces,
-			ST_FACESX,
-			ST_FACESY,
-			_g->faces,
-			&_g->st_faceindex,
-			&_g->st_statusbaron);
+                       ST_FACESX,
+                       ST_FACESY,
+                       _g->faces,
+                       &_g->st_faceindex,
+                       &_g->st_statusbaron);
 }
 
 static bool st_stopped = true;
 
 void ST_Start(void)
 {
-  if (!st_stopped)
-    ST_Stop();
-  ST_initData();
-  ST_createWidgets();
-  st_stopped = false;
+    if (!st_stopped)
+        ST_Stop();
+    ST_initData();
+    ST_createWidgets();
+    st_stopped = false;
 }
 
 static void ST_Stop(void)
 {
-  if (st_stopped)
-    return;
-  V_SetPalette(0);
-  st_stopped = true;
+    if (st_stopped)
+        return;
+    V_SetPalette(0);
+    st_stopped = true;
 }
 
 void ST_Init(void)
 {
-  ST_loadData();
+    ST_loadData();
 }

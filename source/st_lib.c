@@ -32,13 +32,9 @@
  *-----------------------------------------------------------------------------*/
 
 #include "doomdef.h"
-#include "doomstat.h"
 #include "v_video.h"
-#include "w_wad.h"
 #include "st_stuff.h"
 #include "st_lib.h"
-#include "r_main.h"
-#include "lprintf.h"
 #include "global_data.h"
 
 #include "gba_functions.h"
@@ -48,7 +44,7 @@
 //
 void STlib_init(void)
 {
-  // cph - no longer hold STMINUS pointer
+    // cph - no longer hold STMINUS pointer
 }
 
 //
@@ -62,20 +58,20 @@ void STlib_init(void)
 //
 void STlib_initNum
 (st_number_t* n,
-  int x,
-  int y,
-  const patch_t **pl,
-  int* num,
-  bool* on,
-  int     width )
+ int x,
+ int y,
+ const patch_t **pl,
+ int* num,
+ bool* on,
+ int     width )
 {
-  n->x  = x;
-  n->y  = y;
-  n->oldnum = 0;
-  n->width  = width;
-  n->num  = num;
-  n->on = on;
-  n->p  = pl;
+    n->x  = x;
+    n->y  = y;
+    n->oldnum = 0;
+    n->width  = width;
+    n->num  = num;
+    n->on = on;
+    n->p  = pl;
 }
 
 /*
@@ -91,55 +87,51 @@ void STlib_initNum
  * jff 2/16/98 add color translation to digit output
  * cphipps 10/99 - const pointer to colour trans table, made function static
  */
-static void STlib_drawNum
-( st_number_t*  n,
-  int cm,
-  bool refresh )
+static void STlib_drawNum(st_number_t* n)
 {
+    int   numdigits = n->width;
+    int   num = *n->num;
 
-  int   numdigits = n->width;
-  int   num = *n->num;
+    int   w = n->p[0]->width;
+    int   x = n->x;
 
-  int   w = n->p[0]->width;
-  int   x = n->x;
+    int   neg;
 
-  int   neg;
+    // CPhipps - compact some code, use num instead of *n->num
+    if ((neg = (n->oldnum = num) < 0))
+    {
+        if (numdigits == 2 && num < -9)
+            num = -9;
+        else if (numdigits == 3 && num < -99)
+            num = -99;
 
-  // CPhipps - compact some code, use num instead of *n->num
-  if ((neg = (n->oldnum = num) < 0))
-  {
-    if (numdigits == 2 && num < -9)
-      num = -9;
-    else if (numdigits == 3 && num < -99)
-      num = -99;
+        num = -num;
+    }
 
-    num = -num;
-  }
+    // clear the area
+    x = n->x - numdigits*w;
 
-  // clear the area
-  x = n->x - numdigits*w;
+    // if non-number, do not draw it
+    if (num == 1994)
+        return;
 
-  // if non-number, do not draw it
-  if (num == 1994)
-    return;
+    x = n->x;
 
-  x = n->x;
+    //jff 2/16/98 add color translation to digit output
+    // in the special case of 0, you draw 0
+    if (!num)
+        // CPhipps - patch drawing updated, reformatted
+        V_DrawPatchNoScale(x - w, n->y, n->p[0]);
 
-  //jff 2/16/98 add color translation to digit output
-  // in the special case of 0, you draw 0
-  if (!num)
-    // CPhipps - patch drawing updated, reformatted
-    V_DrawPatchNoScale(x - w, n->y, n->p[0]);
-
-  // draw the new number
-  //jff 2/16/98 add color translation to digit output
-  while (num && numdigits--)
-  {
-    // CPhipps - patch drawing updated, reformatted
-    x -= w;
-    V_DrawPatchNoScale(x, n->y, n->p[num % 10]);
-    num /= 10;
-  }
+    // draw the new number
+    //jff 2/16/98 add color translation to digit output
+    while (num && numdigits--)
+    {
+        // CPhipps - patch drawing updated, reformatted
+        x -= w;
+        V_DrawPatchNoScale(x, n->y, n->p[num % 10]);
+        num /= 10;
+    }
 }
 
 /*
@@ -153,12 +145,10 @@ static void STlib_drawNum
  * jff 2/16/98 add color translation to digit output
  * cphipps 10/99 - make that pointer const
  */
-void STlib_updateNum
-( st_number_t*    n,
-  int cm,
-  bool   refresh )
+void STlib_updateNum(st_number_t* n)
 {
-  if (*n->on) STlib_drawNum(n, cm, refresh);
+    if (*n->on)
+        STlib_drawNum(n);
 }
 
 //
@@ -173,15 +163,15 @@ void STlib_updateNum
 //
 void STlib_initPercent
 (st_percent_t* p,
-  int x,
-  int y,
-  const patch_t** pl,
-  int* num,
-  bool* on,
-  const patch_t *percent )
+ int x,
+ int y,
+ const patch_t** pl,
+ int* num,
+ bool* on,
+ const patch_t *percent )
 {
-  STlib_initNum(&p->n, x, y, pl, num, on, 3);
-  p->p = percent;
+    STlib_initNum(&p->n, x, y, pl, num, on, 3);
+    p->p = percent;
 }
 
 /*
@@ -196,9 +186,9 @@ void STlib_initPercent
  * cphipps - const for pointer to the colour translation table
  */
 
-void STlib_updatePercent(st_percent_t* per, int cm, int refresh)
+void STlib_updatePercent(st_percent_t* per)
 {
-    STlib_updateNum(&per->n, cm, refresh);
+    STlib_updateNum(&per->n);
     //V_DrawPatchNoScale(per->n.x, per->n.y, per->p); - Percentage is in the GBA Doom II Hud graphic ~Kippykip
 }
 
@@ -214,18 +204,18 @@ void STlib_updatePercent(st_percent_t* per, int cm, int refresh)
 //
 void STlib_initMultIcon
 (st_multicon_t* i,
-  int x,
-  int y,
-  const patch_t **il,
-  int* inum,
-  bool* on )
+ int x,
+ int y,
+ const patch_t **il,
+ int* inum,
+ bool* on )
 {
-  i->x  = x;
-  i->y  = y;
-  i->oldinum  = -1;
-  i->inum = inum;
-  i->on = on;
-  i->p  = il;
+    i->x  = x;
+    i->y  = y;
+    i->oldinum  = -1;
+    i->inum = inum;
+    i->on = on;
+    i->p  = il;
 }
 
 //
@@ -238,15 +228,13 @@ void STlib_initMultIcon
 // Passed a st_multicon_t widget, and a refresh flag
 // Returns nothing.
 //
-void STlib_updateMultIcon
-( st_multicon_t*  mi,
-  bool   refresh )
+void STlib_updateMultIcon (st_multicon_t* mi)
 {
     if(!mi->p)
         return;
 
     if (*mi->inum != -1)  // killough 2/16/98: redraw only if != -1
-		V_DrawPatchNoScale(mi->x, mi->y, mi->p[*mi->inum]);
+        V_DrawPatchNoScale(mi->x, mi->y, mi->p[*mi->inum]);
 
     mi->oldinum = *mi->inum;
 
@@ -270,12 +258,12 @@ void STlib_initBinIcon
   bool* val,
   bool* on )
 {
-  b->x  = x;
-  b->y  = y;
-  b->oldval = 0;
-  b->val  = val;
-  b->on = on;
-  b->p  = i;
+    b->x  = x;
+    b->y  = y;
+    b->oldval = 0;
+    b->val  = val;
+    b->on = on;
+    b->p  = i;
 }
 
 //

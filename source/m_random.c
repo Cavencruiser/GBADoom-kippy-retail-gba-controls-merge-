@@ -38,9 +38,7 @@
  *-----------------------------------------------------------------------------*/
 
 
-#include "doomstat.h"
 #include "m_random.h"
-#include "lprintf.h"
 
 #include "global_data.h"
 
@@ -75,13 +73,13 @@ static const unsigned char rndtable[256] = {
 // Which one is deterministic?
 int P_Random (void)
 {
-    _g->prndindex = (_g->prndindex+1)&0xff;
+    _g->prndindex = (_g->prndindex+1) & 0xff;
     return rndtable[_g->prndindex];
 }
 
 int M_Random (void)
 {
-    _g->rndindex = (_g->rndindex+1)&0xff;
+    _g->rndindex = (_g->rndindex+1) & 0xff;
     return rndtable[_g->rndindex];
 }
 

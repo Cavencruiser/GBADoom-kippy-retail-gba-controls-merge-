@@ -39,13 +39,10 @@
 #include "config.h"
 #endif
 
-#include "z_zone.h"
 #include "doomdef.h"
-#include "i_video.h"
-#include "v_video.h"
+
 #include "m_random.h"
 #include "f_wipe.h"
-#include "global_data.h"
 #include "i_system_e32.h"
 
 extern short* wipe_y_lookup;

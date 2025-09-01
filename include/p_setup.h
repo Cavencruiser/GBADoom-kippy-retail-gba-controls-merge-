@@ -40,7 +40,7 @@
 #pragma interface
 #endif
 
-void P_SetupLevel(int episode, int map, int playermask, skill_t skill);
+void P_SetupLevel(int episode, int map);
 void P_Init(void);               /* Called by startup code. */
 
 #endif
