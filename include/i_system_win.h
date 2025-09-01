@@ -51,6 +51,8 @@ class DoomWindow : public QWidget
     protected:
     void paintEvent(QPaintEvent *event) override
     {
+        Q_UNUSED(event)
+
         QPainter p(this);
 
         QImage i((uchar*)pb, 240, 160, QImage::Format_Indexed8);
@@ -70,6 +72,8 @@ class DoomWindow : public QWidget
 
     void closeEvent(QCloseEvent *event) override
     {
+        Q_UNUSED(event)
+
         exit(0);
     }
 

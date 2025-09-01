@@ -41,6 +41,7 @@
 #include <unistd.h>
 #endif
 
+#include <string.h>
 #include <fcntl.h>
 #include "doomtype.h"
 #include "doom_iwad.h"

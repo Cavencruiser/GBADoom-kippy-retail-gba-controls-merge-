@@ -300,7 +300,7 @@ inline fixed_t CONSTFUNC FixedMul(fixed_t a, fixed_t b)
 
 //This is a hack. I want FixedMul inlined only in this file. Sorry, not sorry.
 
-static __attribute__((always_inline)) fixed_t FixedMulInline(fixed_t a, fixed_t b)
+static inline __attribute__((always_inline)) fixed_t FixedMulInline(fixed_t a, fixed_t b)
 {
     return (fixed_t)((int_64_t) a*b >> FRACBITS);
 }
@@ -308,12 +308,12 @@ static __attribute__((always_inline)) fixed_t FixedMulInline(fixed_t a, fixed_t 
 #define FixedMul FixedMulInline
 
 
-static __attribute__((always_inline)) int min(int x, int y)
+static inline __attribute__((always_inline)) int min(int x, int y)
 {
     return x < y ? x : y;
 }
 
-static __attribute__((always_inline)) int max(int x, int y)
+static inline __attribute__((always_inline)) int max(int x, int y)
 {
     return x > y ? x : y;
 }

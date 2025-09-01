@@ -119,6 +119,9 @@ void I_CreateBackBuffer_e32()
 
 void I_FinishUpdate_e32(const byte* srcBuffer, const byte* pallete, const unsigned int width, const unsigned int height)
 {
+    Q_UNUSED(width)
+    Q_UNUSED(height)
+
     pb = (unsigned char*)srcBuffer;
     pl = (unsigned char*)pallete;
 
@@ -159,7 +162,7 @@ void I_FinishUpdate_e32(const byte* srcBuffer, const byte* pallete, const unsign
 
 void I_SetPallete_e32(const byte* pallete)
 {
-
+    Q_UNUSED(pallete)
 }
 
 //**************************************************************************************
