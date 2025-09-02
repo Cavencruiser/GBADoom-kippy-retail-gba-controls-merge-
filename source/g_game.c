@@ -310,7 +310,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     cmd->angleturn = fudgea(cmd->angleturn);
 }
 
-#include "z_bmalloc.h"
 //
 // G_DoLoadLevel
 //
@@ -363,16 +362,6 @@ static void G_DoLoadLevel (void)
 
     if (_g->playeringame && _g->player.playerstate == PST_DEAD)
         _g->player.playerstate = PST_REBORN;
-
-
-    // initialize the msecnode_t freelist.                     phares 3/25/98
-    // any nodes in the freelist are gone by now, cleared
-    // by Z_FreeTags() when the previous level ended or player
-    // died.
-
-    DECLARE_BLOCK_MEMORY_ALLOC_ZONE(secnodezone);
-    NULL_BLOCK_MEMORY_ALLOC_ZONE(secnodezone);
-
 
     P_SetupLevel (_g->gameepisode, _g->gamemap);
 

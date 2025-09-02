@@ -1550,26 +1550,6 @@ bool P_CheckSector(sector_t* sector,bool crunch)
     return _g->nofit;
 }
 
-
-// CPhipps -
-// Use block memory allocator here
-
-#include "z_bmalloc.h"
-
-IMPLEMENT_BLOCK_MEMORY_ALLOC_ZONE(secnodezone, sizeof(msecnode_t), PU_LEVEL, 32, "SecNodes");
-
-inline static msecnode_t* P_GetSecnode(void)
-{
-    return (msecnode_t*)Z_BMalloc(&secnodezone);
-}
-
-// P_PutSecnode() returns a node to the freelist.
-
-inline static void P_PutSecnode(msecnode_t* node)
-{
-    Z_BFree(&secnodezone, node);
-}
-
 // phares 3/16/98
 //
 // P_AddSecnode() searches the current list to see if this sector is
@@ -1595,7 +1575,7 @@ msecnode_t* P_AddSecnode(sector_t* s, mobj_t* thing, msecnode_t* nextnode)
     // Couldn't find an existing node for this sector. Add one at the head
     // of the list.
 
-    node = P_GetSecnode();
+    node = Z_Malloc(sizeof(msecnode_t), PU_LEVEL, NULL);
 
     // killough 4/4/98, 4/7/98: mark new nodes unvisited.
     node->visited = 0;
@@ -1631,7 +1611,6 @@ msecnode_t* P_DelSecnode(msecnode_t* node)
 
     if (node)
     {
-
         // Unlink from the Thing thread. The Thing thread begins at
         // sector_list and not from mobj_t->touching_sectorlist.
 
@@ -1656,7 +1635,7 @@ msecnode_t* P_DelSecnode(msecnode_t* node)
 
         // Return this node to the freelist
 
-        P_PutSecnode(node);
+        Z_Free(node);
         return(tn);
     }
     return(NULL);

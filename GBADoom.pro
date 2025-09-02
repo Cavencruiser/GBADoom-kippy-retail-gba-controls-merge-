@@ -90,7 +90,6 @@ SOURCES += \
         source/version.c \
         source/w_wad.c \
         source/wi_stuff.c \
-        source/z_bmalloc.c \
         source/z_zone.c
 
 
@@ -172,7 +171,6 @@ HEADERS += \
     include/version.h \
     include/w_wad.h \
     include/wi_stuff.h \
-    include/z_bmalloc.h \
     include/z_zone.h
 
 DISTFILES += \
