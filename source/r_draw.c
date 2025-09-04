@@ -62,7 +62,6 @@ void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars)
     dcvars->iscale = dcvars->texturemid = 0;
     dcvars->source = NULL;
     dcvars->colormap = colormaps;
-    dcvars->translation = NULL;
 }
 
 //

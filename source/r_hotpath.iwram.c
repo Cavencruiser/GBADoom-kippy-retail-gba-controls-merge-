@@ -318,6 +318,11 @@ static inline __attribute__((always_inline)) int max(int x, int y)
     return x > y ? x : y;
 }
 
+static inline __attribute__((always_inline)) int clamp(int lo, int v, int hi)
+{
+    return min(max(v, lo), hi);
+}
+
 // killough 5/3/98: reformatted
 
 static CONSTFUNC int SlopeDiv(unsigned num, unsigned den)
@@ -605,7 +610,7 @@ static void R_DrawColumnHiRes(const draw_column_vars_t *dcvars)
         shift = 8;
     }
 
-    while(count--)
+    do
     {
         unsigned int old = *dest;
         const unsigned int color = colormap[source[frac>>COLBITS]];
@@ -614,7 +619,9 @@ static void R_DrawColumnHiRes(const draw_column_vars_t *dcvars)
 
         dest+=SCREENWIDTH;
         frac+=fracstep;
-    }
+
+    } while(--count);
+
 }
 
 #define FUZZOFF (SCREENWIDTH)
@@ -666,7 +673,9 @@ static void R_DrawFuzzColumn (const draw_column_vars_t *dcvars)
 
     do
     {        
-        R_DrawColumnPixel(dest, (const byte*)&dest[fuzzoffset[fuzzpos]], colormap, 0); dest += SCREENWIDTH;  fuzzpos++;
+        R_DrawColumnPixel(dest, (const byte*)&dest[fuzzoffset[fuzzpos]], colormap, 0);
+        dest += SCREENWIDTH;
+        fuzzpos++;
 
         if(fuzzpos >= 50)
             fuzzpos = 0;
@@ -937,7 +946,7 @@ static void R_RenderMaskedSegRange(const drawseg_t *ds, int x1, int x2)
 
 // killough 5/2/98: reformatted
 
-static PUREFUNC int R_PointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
+static inline int R_PointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
 {
     const fixed_t lx = line->v1.x;
     const fixed_t ly = line->v1.y;
@@ -953,13 +962,8 @@ static PUREFUNC int R_PointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
     x -= lx;
     y -= ly;
 
-    // Try to quickly decide by looking at sign bits.
-    if ((ldy ^ ldx ^ x ^ y) < 0)
-        return (ldy ^ x) < 0;          // (left is negative)
-
     return FixedMul(y, ldx>>FRACBITS) >= FixedMul(ldy>>FRACBITS, x);
 }
-
 
 //
 // R_DrawSprite
@@ -1391,20 +1395,21 @@ static void R_DoDrawPlane(visplane_t *pl)
 // killough 5/2/98: reformatted, cleaned up
 // CPhipps - moved here from r_main.c
 
-static fixed_t R_ScaleFromGlobalAngle(angle_t visangle)
+static inline fixed_t R_ScaleFromGlobalAngle(angle_t visangle)
 {
-  int     anglea = ANG90 + (visangle-viewangle);
-  int     angleb = ANG90 + (visangle-rw_normalangle);
+    const int anglea = ANG90 + (visangle - viewangle);
+    const int angleb = ANG90 + (visangle - rw_normalangle);
 
-  int     den = FixedMul(rw_distance, finesine[anglea>>ANGLETOFINESHIFT]);
+    const fixed_t den = FixedMul(rw_distance, finesine[anglea >> ANGLETOFINESHIFT]);
+    const fixed_t num = FixedMul(projectiony, finesine[angleb >> ANGLETOFINESHIFT]);
 
-// proff 11/06/98: Changed for high-res
-  fixed_t num = FixedMul(projectiony, finesine[angleb>>ANGLETOFINESHIFT]);
+    if (den <= (num >> 16))
+        return 64 * FRACUNIT;
 
-  return den > num>>16 ? (num = FixedDiv(num, den)) > 64*FRACUNIT ?
-    64*FRACUNIT : num < 256 ? 256 : num : 64*FRACUNIT;
+    fixed_t scale = FixedDiv(num, den);
+
+    return clamp(256, scale, 64 * FRACUNIT);
 }
-
 
 //
 // R_NewVisSprite

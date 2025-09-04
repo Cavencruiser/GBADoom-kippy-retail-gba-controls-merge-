@@ -52,8 +52,6 @@ typedef struct {
     const byte          *source; // first pixel in a column
 
     const lighttable_t  *colormap;
-    const byte          *translation;
-
     bool             odd_pixel;
 
 } draw_column_vars_t;
