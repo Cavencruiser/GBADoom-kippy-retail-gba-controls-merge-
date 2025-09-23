@@ -157,7 +157,6 @@ HEADERS += \
     include/r_main.h \
     include/r_patch.h \
     include/r_plane.h \
-    include/r_segs.h \
     include/r_sky.h \
     include/r_state.h \
     include/r_things.h \

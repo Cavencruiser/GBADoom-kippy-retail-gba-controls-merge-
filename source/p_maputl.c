@@ -50,8 +50,10 @@ fixed_t CONSTFUNC P_AproxDistance(fixed_t dx, fixed_t dy)
 {
     dx = D_abs(dx);
     dy = D_abs(dy);
+
     if (dx < dy)
         return dx+dy-(dx>>1);
+
     return dx+dy-(dy>>1);
 }
 
@@ -63,11 +65,10 @@ fixed_t CONSTFUNC P_AproxDistance(fixed_t dx, fixed_t dy)
 
 int PUREFUNC P_PointOnLineSide(fixed_t x, fixed_t y, const line_t *line)
 {
-    return
-            !line->dx ? x <= line->v1.x ? line->dy > 0 : line->dy < 0 :
-                                          !line->dy ? y <= line->v1.y ? line->dx < 0 : line->dx > 0 :
-                                                                        FixedMul(y-line->v1.y, line->dx>>FRACBITS) >=
-                                                                        FixedMul(line->dy>>FRACBITS, x-line->v1.x);
+    return !line->dx ? x <= line->v1.x ? line->dy > 0 : line->dy < 0 :
+            !line->dy ? y <= line->v1.y ? line->dx < 0 : line->dx > 0 :
+            FixedMul(y-line->v1.y, line->dx>>FRACBITS) >=
+            FixedMul(line->dy>>FRACBITS, x-line->v1.x);
 }
 
 //

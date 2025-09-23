@@ -207,17 +207,7 @@
 #define MF_POOLED      (unsigned int)(0x0000000010000000)
 #define MF_UNUSED       (unsigned int)(0x0000000020000000)
 
-    // Translucent sprite?                                          // phares
-#define MF_TRANSLUCENT  (unsigned int)(0x0000000040000000)
-
 #define MF_FRIEND       (unsigned int)(0x0000000080000000)
-
-// killough 9/15/98: Same, but internal flags, not intended for .deh
-// (some degree of opaqueness is good, to avoid compatibility woes)
-
-enum {
-  MIF_FALLING = 1      // Object is falling
-};
 
 // Map Object definition.
 //
@@ -305,12 +295,16 @@ typedef struct mobj_s
 
 
     // killough 9/9/98: How long a monster pursues a target.
+
+    //0-100 7 bits.
     unsigned short      pursuecount;
 
+    //8 bits
     short               movecount;      // when 0, select a new dir
 
     // Reaction time: if non 0, don't attack yet.
     // Used by player to freeze a bit after teleporting.
+    //8bits
     short               reactiontime;
 
     // Thing being chased/attacked for tracers.

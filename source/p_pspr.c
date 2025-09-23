@@ -197,14 +197,13 @@ int P_WeaponPreferred(int w1, int w2)
 {
     return
             (weapon_preferences[0] != ++w2 && (weapon_preferences[0] == ++w1 ||
-                                               (weapon_preferences[1] !=   w2 && (weapon_preferences[1] ==   w1 ||
-                                                                                  (weapon_preferences[2] !=   w2 && (weapon_preferences[2] ==   w1 ||
-                                                                                                                     (weapon_preferences[3] !=   w2 && (weapon_preferences[3] ==   w1 ||
-                                                                                                                                                        (weapon_preferences[4] !=   w2 && (weapon_preferences[4] ==   w1 ||
-                                                                                                                                                                                           (weapon_preferences[5] !=   w2 && (weapon_preferences[5] ==   w1 ||
-                                                                                                                                                                                                                              (weapon_preferences[6] !=   w2 && (weapon_preferences[6] ==   w1 ||
-                                                                                                                                                                                                                                                                 (weapon_preferences[7] !=   w2 && (weapon_preferences[7] ==   w1
-                                                                                                                                                                                                                                                                                                    ))))))))))))))));
+            (weapon_preferences[1] !=   w2 && (weapon_preferences[1] ==   w1 ||
+            (weapon_preferences[2] !=   w2 && (weapon_preferences[2] ==   w1 ||
+            (weapon_preferences[3] !=   w2 && (weapon_preferences[3] ==   w1 ||
+            (weapon_preferences[4] !=   w2 && (weapon_preferences[4] ==   w1 ||
+            (weapon_preferences[5] !=   w2 && (weapon_preferences[5] ==   w1 ||
+            (weapon_preferences[6] !=   w2 && (weapon_preferences[6] ==   w1 ||
+            (weapon_preferences[7] !=   w2 && (weapon_preferences[7] ==   w1))))))))))))))));
 }
 
 int P_CheckCanSwitchWeapon(weapontype_t weapon, player_t* player)
