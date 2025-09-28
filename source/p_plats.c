@@ -336,17 +336,16 @@ int EV_DoPlat
 //
 void P_ActivateInStasis(int tag)
 {
-    platlist_t *pl;
-    for (pl=_g->activeplats; pl; pl=pl->next)   // search the active plats
+    for (int i = 0; i < MAXPLATS; i++)
     {
-        plat_t *plat = pl->plat;              // for one in stasis with right tag
-        if (plat->tag == tag && plat->status == in_stasis)
+        if (_g->activeplats[i] && _g->activeplats[i]->tag == tag && _g->activeplats[i]->status == in_stasis)
         {
-            if (plat->type==toggleUpDn) //jff 3/14/98 reactivate toggle type
-                plat->status = plat->oldstatus==up? down : up;
+            if (_g->activeplats[i]->type==toggleUpDn) //jff 3/14/98 reactivate toggle type
+                _g->activeplats[i]->status = _g->activeplats[i]->oldstatus==up? down : up;
             else
-                plat->status = plat->oldstatus;
-            plat->thinker.function = (think_t)T_PlatRaise;
+                _g->activeplats[i]->status = _g->activeplats[i]->oldstatus;
+
+            _g->activeplats[i]->thinker.function = (think_t)T_PlatRaise;
         }
     }
 }
@@ -363,17 +362,16 @@ void P_ActivateInStasis(int tag)
 //
 int EV_StopPlat(const line_t* line)
 {
-    platlist_t *pl;
-    for (pl=_g->activeplats; pl; pl=pl->next)  // search the active plats
+    for (int i = 0; i < MAXPLATS; i++)
     {
-        plat_t *plat = pl->plat;             // for one with the tag not in stasis
-        if (plat->status != in_stasis && plat->tag == line->tag)
+        if(_g->activeplats[i] && _g->activeplats[i]->status != in_stasis && _g->activeplats[i]->tag == line->tag)
         {
-            plat->oldstatus = plat->status;    // put it in stasis
-            plat->status = in_stasis;
-            plat->thinker.function = NULL;
+            _g->activeplats[i]->oldstatus = _g->activeplats[i]->status;    // put it in stasis
+            _g->activeplats[i]->status = in_stasis;
+            _g->activeplats[i]->thinker.function = NULL;
         }
     }
+
     return 1;
 }
 
@@ -387,17 +385,15 @@ int EV_StopPlat(const line_t* line)
 //
 void P_AddActivePlat(plat_t* plat)
 {
-    platlist_t *list = Z_Malloc(sizeof *list, PU_LEVEL, NULL);
-    list->plat = plat;
-    plat->list = list;
-
-    if ((list->next = _g->activeplats))
-        list->next->prev = &list->next;
-
-    list->prev = &_g->activeplats;
-    _g->activeplats = list;
+    for (int i = 0; i < MAXPLATS; i++)
+    {
+        if (_g->activeplats[i] == NULL)
+        {
+            _g->activeplats[i] = plat;
+            return;
+        }
+    }
 }
-
 
 //
 // P_RemoveActivePlat()
@@ -409,15 +405,18 @@ void P_AddActivePlat(plat_t* plat)
 //
 void P_RemoveActivePlat(plat_t* plat)
 {
-    platlist_t *list = plat->list;
-    plat->sector->floordata = NULL; //jff 2/23/98 multiple thinkers
+    for (int i = 0; i < MAXPLATS; i++)
+    {
+        if (_g->activeplats[i] == plat)
+        {
+            plat->sector->floordata = NULL; //jff 2/23/98 multiple thinkers
 
-    P_RemoveThinker(&plat->thinker);
+            P_RemoveThinker(&_g->activeplats[i]->thinker);
+            _g->activeplats[i] = NULL;
 
-    if ((*list->prev = list->next))
-        list->next->prev = list->prev;
-
-    Z_Free(list);
+            return;
+        }
+    }
 }
 
 //
@@ -429,10 +428,6 @@ void P_RemoveActivePlat(plat_t* plat)
 //
 void P_RemoveAllActivePlats(void)
 {
-    while (_g->activeplats)
-    {
-        platlist_t *next = _g->activeplats->next;
-        Z_Free(_g->activeplats);
-        _g->activeplats = next;
-    }
+    for (int i = 0; i < MAXPLATS; i++)
+        _g->activeplats[i] = NULL;
 }
