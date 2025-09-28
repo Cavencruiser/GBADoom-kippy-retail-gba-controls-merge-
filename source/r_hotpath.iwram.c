@@ -35,11 +35,12 @@
 
 //This is to keep the codesize under control.
 //This whole file needs to fit within IWRAM.
-#pragma GCC optimize ("Os")
-
+#ifdef GBA
+    #pragma GCC optimize ("Os")
+#endif
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+    #include "config.h"
 #endif
 
 #ifndef GBA
