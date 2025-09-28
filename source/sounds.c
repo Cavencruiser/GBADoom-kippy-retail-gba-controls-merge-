@@ -38,7 +38,6 @@
 #include "config.h"
 #endif
 
-#include "doomtype.h"
 #include "sounds.h"
 
 //

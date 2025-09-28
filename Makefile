@@ -44,15 +44,16 @@ MUSIC		:= music
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:=	-g -Wall -O3 -fgcse-after-reload -gdwarf-4\
+CFLAGS	:=	-g -Wall -O3 -gdwarf-4\
                 -mcpu=arm7tdmi -mtune=arm7tdmi -flto=8\
-                -fallow-store-data-races\
-                -DGBA\
-		$(ARCH)
+		-fgcse-after-reload -fallow-store-data-races\
+		-ffast-math\
+		-DGBA\
+		$(ARCH) $(INCLUDE)
 
-CFLAGS	+=	$(INCLUDE)
+CXXFLAGS:=	$(CFLAGS) -fno-rtti -fno-exceptions -fno-threadsafe-statics -std=c++23
 
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
+CFLAGS	+=	-std=gnu23
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
@@ -129,7 +130,7 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 #---------------------------------------------------------------------------------
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) V=1 --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:

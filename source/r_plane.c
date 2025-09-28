@@ -48,24 +48,11 @@
 #include "config.h"
 #endif
 
-#include "z_zone.h"  /* memory allocation wrappers -- killough */
-
-#include "doomstat.h"
-#include "w_wad.h"
 #include "r_main.h"
-#include "r_draw.h"
-#include "r_things.h"
-#include "r_sky.h"
 #include "r_plane.h"
-#include "v_video.h"
-#include "lprintf.h"
-
 #include "global_data.h"
 
-#include "gba_functions.h"
-
 const fixed_t iprojection = 1092; //( (1 << FRACUNIT) / (SCREENWIDTH / 2))
-
 
 //
 // R_InitPlanes

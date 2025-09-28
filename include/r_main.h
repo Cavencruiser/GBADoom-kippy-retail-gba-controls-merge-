@@ -97,13 +97,13 @@ extern fixed_t basexscale, baseyscale;
 
 extern fixed_t  viewcos, viewsin;
 
-extern boolean highDetail;
+extern bool highDetail;
 
 //
 // Utility functions.
 //
 
-angle_t R_PointToAngle2(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2);
+angle_t R_PointToAngle2(const fixed_t x1, const fixed_t y1, fixed_t x2, fixed_t y2);
 subsector_t *R_PointInSubsector(fixed_t x, fixed_t y);
 
 //

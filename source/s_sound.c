@@ -37,16 +37,11 @@
 #include "config.h"
 #endif
 
-#include "doomstat.h"
 #include "s_sound.h"
 #include "i_sound.h"
-#include "i_system.h"
 #include "d_main.h"
 #include "r_main.h"
-#include "m_random.h"
-#include "w_wad.h"
 #include "lprintf.h"
-
 #include "global_data.h"
 
 // when to clip out sounds
@@ -76,7 +71,7 @@ static const unsigned int numChannels = 8;
 // Internals.
 //
 
-void S_StopChannel(int cnum);
+void S_StopChannel(unsigned int cnum);
 
 int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, int *vol, int *sep);
 
@@ -92,9 +87,7 @@ void S_Init(int sfxVolume, int musicVolume)
     //jff 1/22/98 skip sound init if sound not enabled
     if (!nosfxparm)
     {
-        int i;
-
-        lprintf(LO_CONFIRM, "S_Init: default sfx volume %d", sfxVolume);
+        lprintf("S_Init: default sfx volume %d", sfxVolume);
 
         S_SetSfxVolume(sfxVolume);
 
@@ -177,28 +170,24 @@ void S_Start(void)
 
 void S_StartSoundAtVolume(mobj_t *origin, int sfx_id, int volume)
 {
-    int priority, cnum, is_pickup;
-    const sfxinfo_t *sfx;
-
     int sep = NORM_SEP;
 
     //jff 1/22/98 return if sound is not enabled
     if (nosfxparm)
         return;
 
-    is_pickup = sfx_id & PICKUP_SOUND || sfx_id == sfx_oof || (sfx_id == sfx_noway); // killough 4/25/98
+    int is_pickup = sfx_id & PICKUP_SOUND || sfx_id == sfx_oof || (sfx_id == sfx_noway); // killough 4/25/98
     sfx_id &= ~PICKUP_SOUND;
 
     // check for bogus sound #
     if (sfx_id < 1 || sfx_id > NUMSFX)
         I_Error("S_StartSoundAtVolume: Bad sfx #: %d", sfx_id);
 
-    sfx = &S_sfx[sfx_id];
+    const sfxinfo_t* sfx = &S_sfx[sfx_id];
 
     // Initialize sound parameters
     if (sfx->link)
     {
-        priority = sfx->priority;
         volume += sfx->volume;
 
         if (volume < 1)
@@ -207,10 +196,7 @@ void S_StartSoundAtVolume(mobj_t *origin, int sfx_id, int volume)
         if (volume > _g->snd_SfxVolume)
             volume = _g->snd_SfxVolume;
     }
-    else
-    {
-        priority = NORM_PRIORITY;
-    }
+
 
     // Check to see if it is audible, modify the params
     // killough 3/7/98, 4/25/98: code rearranged slightly
@@ -224,16 +210,18 @@ void S_StartSoundAtVolume(mobj_t *origin, int sfx_id, int volume)
             return;
 
     // kill old sound
-    for (cnum=0 ; cnum<numChannels ; cnum++)
+    for (unsigned int cnum=0 ; cnum<numChannels ; cnum++)
+    {
         if (_g->channels[cnum].sfxinfo && _g->channels[cnum].origin == origin &&
                 (_g->channels[cnum].is_pickup == is_pickup))
         {
             S_StopChannel(cnum);
             break;
         }
+    }
 
     // try to find a channel
-    cnum = S_getChannel(origin, sfx, is_pickup);
+    int cnum = S_getChannel(origin, sfx, is_pickup);
 
     if (cnum<0)
         return;
@@ -244,7 +232,6 @@ void S_StartSoundAtVolume(mobj_t *origin, int sfx_id, int volume)
         _g->channels[cnum].handle = h;
         _g->channels[cnum].tickend = (_g->gametic + sfx->ticks);
     }
-
 }
 
 void S_StartSound(mobj_t *origin, int sfx_id)
@@ -283,18 +270,18 @@ void S_StartSound2(degenmobj_t* origin, int sfx_id)
 
 void S_StopSound(void *origin)
 {
-    int cnum;
-
     //jff 1/22/98 return if sound is not enabled
     if (nosfxparm)
         return;
 
-    for (cnum=0 ; cnum<numChannels ; cnum++)
+    for (unsigned int cnum=0; cnum < numChannels; cnum++)
+    {
         if (_g->channels[cnum].sfxinfo && _g->channels[cnum].origin == origin)
         {
             S_StopChannel(cnum);
             break;
         }
+    }
 }
 
 
@@ -327,7 +314,7 @@ void S_ResumeSound(void)
     }
 }
 
-static boolean S_SoundIsPlaying(int cnum)
+static bool S_SoundIsPlaying(int cnum)
 {
     const channel_t* channel = &_g->channels[cnum];
 
@@ -344,49 +331,39 @@ static boolean S_SoundIsPlaying(int cnum)
 //
 // Updates music & sounds
 //
-void S_UpdateSounds(void* listener_p)
+void S_UpdateSounds()
 {
-	mobj_t *listener = (mobj_t*) listener_p;
-	int cnum;
-    int sep = NORM_SEP;
-	
-	//jff 1/22/98 return if sound is not enabled
-	if (nosfxparm)
-		return;
-	
-	for (cnum=0 ; cnum<numChannels ; cnum++)
-	{
+    //jff 1/22/98 return if sound is not enabled
+    if (nosfxparm)
+        return;
+
+    for (unsigned int cnum = 0; cnum < numChannels; cnum++)
+    {
         const sfxinfo_t *sfx;
         channel_t *c = &_g->channels[cnum];
-		
-		if ((sfx = c->sfxinfo))
-		{
+
+        if ((sfx = c->sfxinfo))
+        {
             if (S_SoundIsPlaying(c->handle))
-			{
-				// initialize parameters
+            {
+                // initialize parameters
                 int volume = _g->snd_SfxVolume;
 
-				if (sfx->link)
-				{
-					volume += sfx->volume;
-					
-					if (volume < 1)
-					{
-						S_StopChannel(cnum);
-						continue;
-					}
-					else
-					{
-                        if (volume > _g->snd_SfxVolume)
-                            volume = _g->snd_SfxVolume;
+                if (sfx->link)
+                {
+                    volume += sfx->volume;
 
-					}
-				}
-			}
-			else   // if channel is allocated but sound has stopped, free it
-				S_StopChannel(cnum);
-		}
-	}
+                    if (volume < 1)
+                    {
+                        S_StopChannel(cnum);
+                        continue;
+                    }
+                }
+            }
+            else   // if channel is allocated but sound has stopped, free it
+                S_StopChannel(cnum);
+        }
+    }
 }
 
 void S_SetMusicVolume(int volume)
@@ -394,8 +371,10 @@ void S_SetMusicVolume(int volume)
     //jff 1/22/98 return if music is not enabled
     if (nomusicparm)
         return;
+
     if (volume < 0 || volume > 15)
         I_Error("S_SetMusicVolume: Attempt to set music volume at %d", volume);
+
     I_SetMusicVolume(volume);
     _g->snd_MusicVolume = volume;
 }
@@ -407,8 +386,10 @@ void S_SetSfxVolume(int volume)
     //jff 1/22/98 return if sound is not enabled
     if (nosfxparm)
         return;
+
     if (volume < 0 || volume > 127)
         I_Error("S_SetSfxVolume: Attempt to set sfx volume at %d", volume);
+
     _g->snd_SfxVolume = volume;
 }
 
@@ -421,6 +402,7 @@ void S_StartMusic(int m_id)
     //jff 1/22/98 return if music is not enabled
     if (nomusicparm)
         return;
+
     S_ChangeMusic(m_id, false);
 }
 
@@ -465,9 +447,8 @@ void S_StopMusic(void)
 
 
 
-void S_StopChannel(int cnum)
+void S_StopChannel(unsigned int cnum)
 {
-    int i;
     channel_t *c = &_g->channels[cnum];
 
     //jff 1/22/98 return if sound is not enabled
@@ -478,9 +459,11 @@ void S_StopChannel(int cnum)
     {
         // check to see
         //  if other channels are playing the sound
-        for (i=0 ; i<numChannels ; i++)
+        for (unsigned int i=0; i < numChannels; i++)
+        {
             if (cnum != i && c->sfxinfo == _g->channels[i].sfxinfo)
                 break;
+        }
 
         // degrade usefulness of sound data
         c->sfxinfo = 0;
@@ -497,46 +480,30 @@ void S_StopChannel(int cnum)
 
 int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, int *vol, int *sep)
 {
-	fixed_t adx, ady,approx_dist;
+    //jff 1/22/98 return if sound is not enabled
+    if (nosfxparm)
+        return 0;
 
-	//jff 1/22/98 return if sound is not enabled
-	if (nosfxparm)
-		return 0;
+    if (!listener)
+        return 0;
 
-	// e6y
-	// Fix crash when the program wants to S_AdjustSoundParams() for player
-	// which is not displayplayer and displayplayer was not spawned at the moment.
-	// It happens in multiplayer demos only.
-	//
-	// Stack trace is:
-	// P_SetupLevel() \ P_LoadThings() \ P_SpawnMapThing() \ P_SpawnPlayer(players[0]) \
-	// P_SetupPsprites() \ P_BringUpWeapon() \ S_StartSound(players[0]->mo, sfx_sawup) \
-	// S_StartSoundAtVolume() \ S_AdjustSoundParams(players[displayplayer]->mo, ...);
-	// players[displayplayer]->mo is NULL
-	//
-	// There is no more crash on e1cmnet3.lmp between e1m2 and e1m3
-	// http://competn.doom2.net/pub/compet-n/doom/coop/movies/e1cmnet3.zip
-	
-	if (!listener)
-		return 0;
+    // calculate the distance to sound origin
+    // and clip it if necessary
+    fixed_t adx = D_abs(listener->x - source->x);
+    fixed_t ady = D_abs(listener->y - source->y);
 
-	// calculate the distance to sound origin
-	// and clip it if necessary
-	adx = D_abs(listener->x - source->x);
-	ady = D_abs(listener->y - source->y);
+    // From _GG1_ p.428. Appox. eucledian distance fast.
+    fixed_t approx_dist = adx + ady - ((adx < ady ? adx : ady)>>1);
 
-	// From _GG1_ p.428. Appox. eucledian distance fast.
-	approx_dist = adx + ady - ((adx < ady ? adx : ady)>>1);
-
-	if (!approx_dist)  // killough 11/98: handle zero-distance as special case
-	{
+    if (!approx_dist)  // killough 11/98: handle zero-distance as special case
+    {
         *vol = _g->snd_SfxVolume;
-		return *vol > 0;
-	}
-	
-	if (approx_dist > S_CLIPPING_DIST)
-		return 0;
-	
+        return *vol > 0;
+    }
+
+    if (approx_dist > S_CLIPPING_DIST)
+        return 0;
+
 
     // angle of source to listener
     angle_t angle = R_PointToAngle2(listener->x, listener->y, source->x, source->y);
@@ -551,14 +518,14 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, int *vol, int *sep)
     *sep = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
 
 
-	// volume calculation
-	if (approx_dist < S_CLOSE_DIST)
+    // volume calculation
+    if (approx_dist < S_CLOSE_DIST)
         *vol = _g->snd_SfxVolume*8;
-	else
-		// distance effect
+    else
+        // distance effect
         *vol = (_g->snd_SfxVolume * ((S_CLIPPING_DIST-approx_dist)>>FRACBITS) * 8) / S_ATTENUATOR;
-	
-	return (*vol > 0);
+
+    return (*vol > 0);
 }
 
 //
@@ -570,7 +537,7 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, int *vol, int *sep)
 static int S_getChannel(void *origin, const sfxinfo_t *sfxinfo, int is_pickup)
 {
     // channel number to use
-    int cnum;
+    unsigned int cnum;
     channel_t *c;
 
     //jff 1/22/98 return if sound is not enabled
@@ -578,20 +545,25 @@ static int S_getChannel(void *origin, const sfxinfo_t *sfxinfo, int is_pickup)
         return -1;
 
     // Find an open channel
-    for (cnum=0; cnum<numChannels && _g->channels[cnum].sfxinfo; cnum++)
+    for (cnum = 0; cnum<numChannels && _g->channels[cnum].sfxinfo; cnum++)
+    {
         if (origin && _g->channels[cnum].origin == origin &&
                 _g->channels[cnum].is_pickup == is_pickup)
         {
             S_StopChannel(cnum);
             break;
         }
+    }
 
     // None available
     if (cnum == numChannels)
     {      // Look for lower priority
         for (cnum=0 ; cnum<numChannels ; cnum++)
+        {
             if (_g->channels[cnum].sfxinfo->priority >= sfxinfo->priority)
                 break;
+        }
+
         if (cnum == numChannels)
             return -1;                  // No lower priority.  Sorry, Charlie.
         else

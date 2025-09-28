@@ -33,7 +33,6 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include "doomstat.h"
 #include "d_event.h"
 #include "r_main.h"
 #include "p_map.h"
@@ -61,11 +60,11 @@
 //
 
 void P_Thrust(player_t* player,angle_t angle,fixed_t move)
-  {
-  angle >>= ANGLETOFINESHIFT;
-  player->mo->momx += FixedMul(move,finecosine[angle]);
-  player->mo->momy += FixedMul(move,finesine[angle]);
-  }
+{
+    angle >>= ANGLETOFINESHIFT;
+    player->mo->momx += FixedMul(move,finecosine[angle]);
+    player->mo->momy += FixedMul(move,finesine[angle]);
+}
 
 
 /*
@@ -81,8 +80,8 @@ void P_Thrust(player_t* player,angle_t angle,fixed_t move)
 
 static void P_Bob(player_t *player, angle_t angle, fixed_t move)
 {
-  player->momx += FixedMul(move,finecosine[angle >>= ANGLETOFINESHIFT]);
-  player->momy += FixedMul(move,finesine[angle]);
+    player->momx += FixedMul(move,finecosine[angle >>= ANGLETOFINESHIFT]);
+    player->momy += FixedMul(move,finesine[angle]);
 }
 
 //
@@ -91,7 +90,7 @@ static void P_Bob(player_t *player, angle_t angle, fixed_t move)
 //
 
 void P_CalcHeight (player_t* player)
-  {
+{
   int     angle;
   fixed_t bob;
 

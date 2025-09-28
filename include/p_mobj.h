@@ -207,17 +207,7 @@
 #define MF_POOLED      (unsigned int)(0x0000000010000000)
 #define MF_UNUSED       (unsigned int)(0x0000000020000000)
 
-    // Translucent sprite?                                          // phares
-#define MF_TRANSLUCENT  (unsigned int)(0x0000000040000000)
-
 #define MF_FRIEND       (unsigned int)(0x0000000080000000)
-
-// killough 9/15/98: Same, but internal flags, not intended for .deh
-// (some degree of opaqueness is good, to avoid compatibility woes)
-
-enum {
-  MIF_FALLING = 1      // Object is falling
-};
 
 // Map Object definition.
 //
@@ -300,14 +290,21 @@ typedef struct mobj_s
     // matter what (even if shot by another object)
     unsigned short               threshold:8;
 
+    //If a mobj can't move anywhere.
+    unsigned short               stuckcount:4;
+
 
     // killough 9/9/98: How long a monster pursues a target.
+
+    //0-100 7 bits.
     unsigned short      pursuecount;
 
+    //8 bits
     short               movecount;      // when 0, select a new dir
 
     // Reaction time: if non 0, don't attack yet.
     // Used by player to freeze a bit after teleporting.
+    //8bits
     short               reactiontime;
 
     // Thing being chased/attacked for tracers.
@@ -352,18 +349,18 @@ typedef struct mobj_s
 void    P_RespawnSpecials(void);
 mobj_t  *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type);
 void    P_RemoveMobj(mobj_t *th);
-boolean P_SetMobjState(mobj_t *mobj, statenum_t state);
+bool P_SetMobjState(mobj_t *mobj, statenum_t state);
 
-void    P_MobjThinker(mobj_t *mobj);
-void    P_MobjBrainlessThinker(mobj_t* mobj);
+void    P_MobjThinker(mobj_t *mobj, void *);
+void    P_MobjBrainlessThinker(mobj_t* mobj, void *);
 
 void    P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z);
 void    P_SpawnBlood(fixed_t x, fixed_t y, fixed_t z, int damage);
 mobj_t  *P_SpawnMissile(mobj_t *source, mobj_t *dest, mobjtype_t type);
 void    P_SpawnPlayerMissile(mobj_t *source, mobjtype_t type);
-boolean P_IsDoomnumAllowed(int doomnum);
+bool P_IsDoomnumAllowed(int doomnum);
 void    P_SpawnMapThing (const mapthing_t*  mthing);
-void    P_SpawnPlayer(int n, const mapthing_t *mthing);
+void    P_SpawnPlayer(const mapthing_t *mthing);
 void    P_CheckMissileSpawn(mobj_t*);  // killough 8/2/98
 void    P_ExplodeMissile(mobj_t*);    // killough
 

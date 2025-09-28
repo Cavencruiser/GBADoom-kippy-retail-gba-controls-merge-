@@ -33,18 +33,10 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include "doomstat.h"
-#include "w_wad.h"
 #include "r_main.h"
 #include "r_draw.h"
 #include "v_video.h"
-#include "st_stuff.h"
-#include "g_game.h"
-#include "am_map.h"
-#include "lprintf.h"
-
 #include "gba_functions.h"
-
 #include "global_data.h"
 
 //
@@ -67,10 +59,9 @@
 void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars)
 {
     dcvars->x = dcvars->yl = dcvars->yh = 0;
-	dcvars->iscale = dcvars->texturemid = 0;
-	dcvars->source = NULL;
+    dcvars->iscale = dcvars->texturemid = 0;
+    dcvars->source = NULL;
     dcvars->colormap = colormaps;
-	dcvars->translation = NULL;
 }
 
 //
@@ -99,4 +90,6 @@ void R_InitBuffer()
 
     for(int i = 0; i < 120; i++)
         screenheightarray[i] = 128;
+
+    _g->tmbbox = tmpbbox;
 }

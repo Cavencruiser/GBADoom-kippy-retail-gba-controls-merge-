@@ -28,19 +28,9 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include "z_zone.h"
-#include "doomstat.h"
-#include "w_wad.h"
-#include "r_main.h"
-#include "r_sky.h"
-#include "r_things.h"
-#include "p_tick.h"
-#include "i_system.h"
-#include "r_draw.h"
-#include "lprintf.h"
-#include "r_patch.h"
-#include <assert.h>
 
+#include "w_wad.h"
+#include "r_patch.h"
 #include "global_data.h"
 
 //---------------------------------------------------------------------------

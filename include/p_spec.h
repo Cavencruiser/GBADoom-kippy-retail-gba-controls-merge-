@@ -601,7 +601,7 @@ typedef struct
   int count;
   plat_e status;
   plat_e oldstatus;
-  boolean crush;
+  bool crush;
   int tag;
   plattype_e type;
 
@@ -652,7 +652,7 @@ typedef struct
   fixed_t topheight;
   fixed_t speed;
   fixed_t oldspeed;
-  boolean crush;
+  bool crush;
 
   //jff 02/04/98 add these to support ceiling changers
   int newspecial;
@@ -679,7 +679,7 @@ typedef struct
 {
   thinker_t thinker;
   floor_e type;
-  boolean crush;
+  bool crush;
   sector_t* sector;
   int direction;
   int newspecial;
@@ -747,7 +747,7 @@ typedef struct {
 //
 typedef struct
 {
-    boolean     istexture;
+    bool     istexture;
     short         picnum;
     short         basepic;
     short         numpics;
@@ -849,18 +849,18 @@ sector_t* getNextSector
 int P_CheckTag
 (const line_t *line); // jff 2/27/98
 
-boolean P_CanUnlockGenDoor
+bool P_CanUnlockGenDoor
 ( const line_t* line,
   player_t* player);
 
-boolean P_SectorActive
+bool P_SectorActive
 ( special_e t,
   const sector_t* s );
 
-boolean P_IsSecret
+bool P_IsSecret
 ( const sector_t *sec );
 
-boolean P_WasSecret
+bool P_WasSecret
 ( const sector_t *sec );
 
 void P_ChangeSwitchTexture
@@ -876,32 +876,32 @@ void P_ChangeSwitchTexture
 // p_lights
 
 void T_LightFlash
-( lightflash_t* flash );
+    (lightflash_t* flash , void *);
 
 void T_StrobeFlash
-( strobe_t* flash );
+    (strobe_t* flash , void *);
 
 // jff 8/8/98 add missing thinker for flicker
 void T_FireFlicker
-( fireflicker_t* flick );
+    (fireflicker_t* flick , void *);
 
 void T_Glow
-( glow_t* g );
+    (glow_t* g , void *);
 
 // p_plats
 
 void T_PlatRaise
-( plat_t* plat );
+    (plat_t* plat , void *);
 
 // p_doors
 
 void T_VerticalDoor
-( vldoor_t* door );
+    (vldoor_t* door , void *);
 
 // p_ceilng
 
 void T_MoveCeiling
-( ceiling_t* ceiling );
+    (ceiling_t* ceiling , void *);
 
 // p_floor
 
@@ -909,20 +909,20 @@ result_e T_MovePlane
 ( sector_t* sector,
   fixed_t speed,
   fixed_t dest,
-  boolean crush,
+  bool crush,
   int floorOrCeiling,
   int direction );
 
 void T_MoveFloor
-( floormove_t* floor );
+    (floormove_t* floor , void *);
 
 void T_MoveElevator
-( elevator_t* elevator );
+    (elevator_t* elevator , void *);
 
 // p_spec
 
 void T_Scroll
-( scroll_t * );      // killough 3/7/98: scroll effect thinker
+    (scroll_t * , void *);      // killough 3/7/98: scroll effect thinker
 
 ////////////////////////////////////////////////////////////////
 //
@@ -948,7 +948,7 @@ int EV_SilentLineTeleport
 ( const line_t* line,
   int side,
   mobj_t* thing,
-  boolean reverse);
+  bool reverse);
 
 // p_floor
 
@@ -1067,7 +1067,7 @@ void P_UpdateSpecials
 ( void );
 
 // when needed
-boolean P_UseSpecialLine
+bool P_UseSpecialLine
 ( mobj_t* thing,
   const line_t* line,
   int   side );
@@ -1117,8 +1117,7 @@ void P_SpawnDoorCloseIn30
 ( sector_t* sec );
 
 void P_SpawnDoorRaiseIn5Mins
-( sector_t* sec,
-  int secnum );
+( sector_t* sec);
 
 // p_ceilng
 

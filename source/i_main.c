@@ -41,25 +41,16 @@
 #include <unistd.h>
 #endif
 
-#include "doomdef.h"
 #include "d_main.h"
-#include "m_fixed.h"
 #include "i_system.h"
 #include "i_video.h"
 #include "z_zone.h"
 #include "lprintf.h"
-#include "m_random.h"
-#include "doomstat.h"
-#include "g_game.h"
-#include "m_misc.h"
+
 #include "i_sound.h"
 #include "i_main.h"
 #include "lprintf.h"
 #include "global_data.h"
-
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 /* Most of the following has been rewritten by Lee Killough
  *
@@ -77,11 +68,14 @@ void I_Init(void)
 static void PrintVer(void)
 {
     char vbuf[24];
-    lprintf(LO_INFO,"%s",I_GetVersionString(vbuf,200));
+    lprintf("%s",I_GetVersionString(vbuf));
 }
 
 int main(int argc, const char * const * argv)
 {
+    (void)argc;
+    (void)argv;
+
     /* cphipps - call to video specific startup code */
     I_PreInitGraphics();
 

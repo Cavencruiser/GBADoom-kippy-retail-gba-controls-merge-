@@ -51,7 +51,14 @@ inline static void BlockSet(void* dest, volatile unsigned int val, const unsigne
 
     DMA3COPY(&val, dest, DMA_SRC_FIXED | DMA_DST_INC | DMA32 | DMA_IMMEDIATE | words)
 #else
-    memset(dest, val, len & 0xfffffffc);
+
+    unsigned int count = len >> 2;
+    unsigned int* d = (unsigned int*)dest;
+
+    do
+    {
+        *d++ = val;
+    } while(--count);
 #endif
 }
 
@@ -88,6 +95,10 @@ inline static void SaveSRAM(const byte* eeprom, unsigned int size, unsigned int 
 {
 #ifdef GBA
     ByteCopy((byte*)(0xE000000 + offset), eeprom, size);
+#else
+    (void)eeprom; //Avoid unused parameter warning.
+    (void)size;   //Avoid unused parameter warning.
+    (void)offset; //Avoid unused parameter warning.
 #endif
 }
 
@@ -95,6 +106,10 @@ inline static void LoadSRAM(byte* eeprom, unsigned int size, unsigned int offset
 {
 #ifdef GBA
     ByteCopy(eeprom, (byte*)(0xE000000 + offset), size);
+#else
+    (void)eeprom; //Avoid unused parameter warning.
+    (void)size;   //Avoid unused parameter warning.
+    (void)offset; //Avoid unused parameter warning.
 #endif
 }
 

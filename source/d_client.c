@@ -47,10 +47,7 @@
 #include <sys/wait.h>
 #endif
 
-#include "doomtype.h"
-#include "doomstat.h"
 #include "d_net.h"
-#include "z_zone.h"
 
 #include "d_main.h"
 #include "g_game.h"
@@ -59,9 +56,7 @@
 #include "protocol.h"
 #include "i_network.h"
 #include "i_system.h"
-#include "i_main.h"
 #include "i_video.h"
-#include "lprintf.h"
 
 #include "global_data.h"
 

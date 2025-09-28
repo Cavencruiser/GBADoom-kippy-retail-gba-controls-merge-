@@ -38,11 +38,8 @@
 #include "hu_lib.h"
 #include "st_stuff.h" /* jff 2/16/98 need loc of status bar */
 #include "w_wad.h"
-#include "s_sound.h"
 #include "dstrings.h"
-#include "sounds.h"
-#include "g_game.h"
-#include "r_main.h"
+
 
 #include "global_data.h"
 

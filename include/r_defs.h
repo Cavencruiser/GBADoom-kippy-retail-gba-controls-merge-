@@ -225,7 +225,7 @@ typedef struct msecnode_s
   struct msecnode_s *m_tnext;  // next msecnode_t for this thing
   struct msecnode_s *m_sprev;  // prev msecnode_t for this sector
   struct msecnode_s *m_snext;  // next msecnode_t for this sector
-  boolean visited; // killough 4/4/98, 4/7/98: used in search algorithms
+  bool visited; // killough 4/4/98, 4/7/98: used in search algorithms
 } msecnode_t;
 
 //
@@ -396,7 +396,7 @@ typedef struct
   // If false use 0 for any position.
   // Note: as eight entries are available,
   //  we might as well insert the same name eight times.
-  boolean rotate;
+  bool rotate;
 
 } spriteframe_t;
 
@@ -419,25 +419,28 @@ typedef struct
 // Go to http://classicgaming.com/doom/editing/ to find out -- killough
 //
 
+typedef union visplane_limits_t
+{
+    struct
+    {
+        byte top, bottom;
+    };
+    unsigned short limits;
+} visplane_limits_t;
+
 typedef struct visplane
 {
   struct visplane *next;        // Next visplane in hash chain -- killough
   short picnum, lightlevel;
   short minx, maxx;
   fixed_t height;
-  boolean modified;
+  byte modified;
 
-  byte		pad1;
-  byte		pad2;
-  byte		pad3;
-  // Here lies the rub for all
-  //  dynamic resize/change of resolution.
-  byte		top[SCREENWIDTH];
-  byte		pad4;
-  byte		pad5;
-  // See above.
-  byte		bottom[SCREENWIDTH];
-  byte		pad6;
+  byte pad1[3];
+
+  visplane_limits_t limits[SCREENWIDTH];
+
+  unsigned int pad2;
 
 } visplane_t;
 

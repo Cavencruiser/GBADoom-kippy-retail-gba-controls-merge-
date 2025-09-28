@@ -36,13 +36,9 @@
  */
 
 #include "doomdef.h"
-#include "r_main.h"
-#include "r_draw.h"
-#include "m_bbox.h"
 #include "w_wad.h"   /* needed for color translation lump lookup */
 #include "v_video.h"
 #include "i_video.h"
-#include "lprintf.h"
 
 #include "global_data.h"
 #include "gba_functions.h"
@@ -181,8 +177,7 @@ void V_DrawPatch(int x, int y, int scrn, const patch_t* patch)
 // static inline; other compilers have different behaviour.
 // This inline is _only_ for the function below
 
-void V_DrawNumPatch(int x, int y, int scrn, int lump,
-         int cm, enum patch_translation_e flags)
+void V_DrawNumPatch(int x, int y, int scrn, int lump)
 {
     V_DrawPatch(x, y, scrn, W_CacheLumpNum(lump));
 }
@@ -233,32 +228,21 @@ void V_FillRect(int x, int y, int width, int height, byte colour)
     }
 }
 
-
-
-static void V_PlotPixel(int x, int y, int color)
+static inline void V_PlotPixel(int x, int y, int color)
 {
     byte* fb = (byte*)_g->screens[0].data;
 
+    // Compute the byte pointer for the pixel
     byte* dest = &fb[(ScreenYToOffset(y) << 1) + x];
 
-    //The GBA must write in 16bits.
-    if((unsigned int)dest & 1)
-    {
-        //Odd addreses, we combine existing pixel with new one.
-        unsigned short* dest16 = (unsigned short*)(dest - 1);
+    // Use 16-bit aligned pointer for read-modify-write
+    unsigned short* dest16 = (unsigned short*)((uintptr_t)dest & ~1);
+    unsigned short old = *dest16;
 
-        unsigned short old = *dest16;
-
-        *dest16 = (old & 0xff) | (color << 8);
-    }
+    if ((uintptr_t)dest & 1)
+        *dest16 = (old & 0x00FF) | ((color & 0xFF) << 8);
     else
-    {
-        unsigned short* dest16 = (unsigned short*)dest;
-
-        unsigned short old = *dest16;
-
-        *dest16 = ((color & 0xff) | (old & 0xff00));
-    }
+        *dest16 = (old & 0xFF00) | (color & 0xFF);
 }
 
 //

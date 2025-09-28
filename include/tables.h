@@ -56,10 +56,10 @@
 #define ANGLETOFINESHIFT        19
 
 // Binary Angle Measument, BAM.
-#define ANG45   0x20000000
-#define ANG90   0x40000000
-#define ANG180  0x80000000
-#define ANG270  0xc0000000
+#define ANG45   0x20000000u
+#define ANG90   0x40000000u
+#define ANG180  0x80000000u
+#define ANG270  0xc0000000u
 #ifndef M_PI
 #define M_PI    3.14159265358979323846
 #endif
@@ -101,5 +101,8 @@ extern const fixed_t* distscale_vram; //VRAM Copy.
 
 extern short* screenheightarray;
 extern short* negonearray;
+
+extern fixed_t* tmpbbox;
+
 
 #endif

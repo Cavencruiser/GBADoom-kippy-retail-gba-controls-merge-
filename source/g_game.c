@@ -44,9 +44,7 @@
 #endif
 
 #include "doomstat.h"
-#include "d_net.h"
 #include "f_finale.h"
-#include "m_misc.h"
 #include "m_menu.h"
 #include "m_random.h"
 #include "p_setup.h"
@@ -58,18 +56,14 @@
 #include "st_stuff.h"
 #include "am_map.h"
 #include "w_wad.h"
-#include "r_main.h"
-#include "r_draw.h"
 #include "p_map.h"
 #include "s_sound.h"
 #include "dstrings.h"
-#include "sounds.h"
 #include "r_data.h"
 #include "r_sky.h"
 #include "p_inter.h"
 #include "g_game.h"
 #include "lprintf.h"
-#include "i_main.h"
 #include "i_system.h"
 
 #include "global_data.h"
@@ -114,8 +108,8 @@ static const fixed_t forwardmove[2] = {0x19, 0x32};
 static const fixed_t sidemove[2]    = {0x18, 0x28};
 static const fixed_t angleturn[3]   = {640, 1280, 320};  // + slow turn
 
-static void G_DoSaveGame (boolean menu);
-static const byte* G_ReadDemoHeader(const byte* demo_p, size_t size, boolean failonerror);
+static void G_DoSaveGame (void);
+static const byte* G_ReadDemoHeader(const byte* demo_p, size_t size, bool failonerror);
 
 
 typedef struct gba_save_data_t
@@ -314,7 +308,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     cmd->angleturn = fudgea(cmd->angleturn);
 }
 
-#include "z_bmalloc.h"
 //
 // G_DoLoadLevel
 //
@@ -368,17 +361,7 @@ static void G_DoLoadLevel (void)
     if (_g->playeringame && _g->player.playerstate == PST_DEAD)
         _g->player.playerstate = PST_REBORN;
 
-
-    // initialize the msecnode_t freelist.                     phares 3/25/98
-    // any nodes in the freelist are gone by now, cleared
-    // by Z_FreeTags() when the previous level ended or player
-    // died.
-
-    DECLARE_BLOCK_MEMORY_ALLOC_ZONE(secnodezone);
-    NULL_BLOCK_MEMORY_ALLOC_ZONE(secnodezone);
-
-
-    P_SetupLevel (_g->gameepisode, _g->gamemap, 0, _g->gameskill);
+    P_SetupLevel (_g->gameepisode, _g->gamemap);
 
     _g->gameaction = ga_nothing;
     Z_CheckHeap ();
@@ -397,7 +380,7 @@ static void G_DoLoadLevel (void)
 // Get info needed to make ticcmd_ts for the players.
 //
 
-boolean G_Responder (event_t* ev)
+bool G_Responder (event_t* ev)
 {
     // any other key pops up menu if in demos
     //
@@ -459,7 +442,7 @@ void G_Ticker (void)
     P_MapStart();
 
     if(_g->playeringame && _g->player.playerstate == PST_REBORN)
-        G_DoReborn (0);
+        G_DoReborn();
 
     P_MapEnd();
 
@@ -479,7 +462,7 @@ void G_Ticker (void)
             G_DoLoadGame ();
             break;
         case ga_savegame:
-            G_DoSaveGame (false);
+            G_DoSaveGame ();
             break;
         case ga_playdemo:
             G_DoPlayDemo ();
@@ -556,6 +539,9 @@ void G_Ticker (void)
     case GS_DEMOSCREEN:
         D_PageTicker ();
         break;
+
+    default:
+        break;
     }
 }
 
@@ -569,7 +555,7 @@ void G_Ticker (void)
 // Can when a player completes a level.
 //
 
-static void G_PlayerFinishLevel(int player)
+static void G_PlayerFinishLevel()
 {
     player_t *p = &_g->player;
     memset(p->powers, 0, sizeof p->powers);
@@ -587,7 +573,7 @@ static void G_PlayerFinishLevel(int player)
 // almost everything is cleared and initialized
 //
 
-void G_PlayerReborn (int player)
+void G_PlayerReborn ()
 {
     player_t *p;
     int i;
@@ -625,7 +611,7 @@ void G_PlayerReborn (int player)
 // G_DoReborn
 //
 
-void G_DoReborn (int playernum)
+void G_DoReborn ()
 {
     _g->gameaction = ga_loadlevel;      // reload the level from scratch
 }
@@ -674,7 +660,7 @@ void G_DoCompleted (void)
     _g->gameaction = ga_nothing;
 
     if (_g->playeringame)
-        G_PlayerFinishLevel(0);        // take away cards and stuff
+        G_PlayerFinishLevel();        // take away cards and stuff
 
     if (_g->automapmode & am_active)
         AM_Stop();
@@ -768,9 +754,9 @@ void G_DoCompleted (void)
     if (nodrawers && (_g->demoplayback || _g->timingdemo))
     {
         if (_g->gamemode == commercial)
-            lprintf(LO_INFO, "FINISHED: MAP%02d\n", _g->gamemap);
+            lprintf("FINISHED: MAP%02d\n", _g->gamemap);
         else
-            lprintf(LO_INFO, "FINISHED: E%dM%d\n", _g->gameepisode, _g->gamemap);
+            lprintf("FINISHED: E%dM%d\n", _g->gameepisode, _g->gamemap);
     }
 
     WI_Start (&_g->wminfo);
@@ -795,6 +781,7 @@ void G_WorldDone (void)
         case 31:
             if (!_g->secretexit)
                 break;
+        [[fallthrough]];
         case 6:
         case 11:
         case 20:
@@ -878,7 +865,7 @@ void G_UpdateSaveGameStrings()
 
 // killough 3/16/98: add slot info
 // killough 5/15/98: add command-line
-void G_LoadGame(int slot, boolean command)
+void G_LoadGame(int slot)
 {  
     _g->savegameslot = slot;
     _g->demoplayback = false;
@@ -927,13 +914,13 @@ void G_DoLoadGame()
 // Description is a 24 byte text string
 //
 
-void G_SaveGame(int slot, const char *description)
+void G_SaveGame(int slot)
 {
     _g->savegameslot = slot;
-    G_DoSaveGame(true);
+    G_DoSaveGame();
 }
 
-static void G_DoSaveGame(boolean menu)
+static void G_DoSaveGame()
 {
     unsigned int savebuffersize = sizeof(gba_save_data_t) * 8;
 
@@ -1105,7 +1092,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
         G_CheckDemoStatus();      // end of demo data stream
     else if (_g->demoplayback && _g->demo_p + (_g->longtics?5:4) > _g->demobuffer + _g->demolength)
     {
-        lprintf(LO_WARN, "G_ReadDemoTiccmd: missing DEMOMARKER\n");
+        lprintf("G_ReadDemoTiccmd: missing DEMOMARKER\n");
         G_CheckDemoStatus();
     }
     else
@@ -1149,7 +1136,7 @@ void G_DeferedPlayDemo (const char* name)
 static int demolumpnum = -1;
 
 //e6y: Check for overrun
-static boolean CheckForOverrun(const byte *start_p, const byte *current_p, size_t maxsize, size_t size, boolean failonerror)
+static bool CheckForOverrun(const byte *start_p, const byte *current_p, size_t maxsize, size_t size, bool failonerror)
 {
     size_t pos = current_p - start_p;
     if (pos + size > maxsize)
@@ -1162,7 +1149,7 @@ static boolean CheckForOverrun(const byte *start_p, const byte *current_p, size_
     return false;
 }
 
-static const byte* G_ReadDemoHeader(const byte *demo_p, size_t size, boolean failonerror)
+static const byte* G_ReadDemoHeader(const byte *demo_p, size_t size, bool failonerror)
 {
     skill_t skill;
     int episode, map;
@@ -1341,7 +1328,7 @@ void G_DoPlayDemo(void)
  * Called after a death or level completion to allow demos to be cleaned up
  * Returns true if a new demo loop action will take place
  */
-boolean G_CheckDemoStatus (void)
+bool G_CheckDemoStatus (void)
 {
     if (_g->timingdemo)
     {

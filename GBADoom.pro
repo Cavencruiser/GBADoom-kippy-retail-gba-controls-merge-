@@ -1,9 +1,14 @@
 QT += gui widgets
 
-CONFIG += c++11 console
+CONFIG += c++23 c23 console
 CONFIG -= app_bundle
 
 CONFIG += force_debug_info
+
+
+QMAKE_CXXFLAGS += -std=c++23
+QMAKE_CFLAGS += -std=c2x
+
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -14,9 +19,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += RANGECHECK
 
 DEFINES += _CRT_SECURE_NO_WARNINGS
-
-
-win32-g++: DEFINES += GBA
 
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -88,7 +90,6 @@ SOURCES += \
         source/version.c \
         source/w_wad.c \
         source/wi_stuff.c \
-        source/z_bmalloc.c \
         source/z_zone.c
 
 
@@ -156,7 +157,6 @@ HEADERS += \
     include/r_main.h \
     include/r_patch.h \
     include/r_plane.h \
-    include/r_segs.h \
     include/r_sky.h \
     include/r_state.h \
     include/r_things.h \
@@ -170,7 +170,6 @@ HEADERS += \
     include/version.h \
     include/w_wad.h \
     include/wi_stuff.h \
-    include/z_bmalloc.h \
     include/z_zone.h
 
 DISTFILES += \

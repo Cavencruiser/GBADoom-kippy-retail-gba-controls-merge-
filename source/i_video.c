@@ -36,28 +36,17 @@
 #include "config.h"
 #endif
 
-#include <stdlib.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
-#include <math.h>
-
-#include "doomstat.h"
 #include "doomdef.h"
 #include "doomtype.h"
 #include "v_video.h"
 #include "r_draw.h"
-#include "d_main.h"
-#include "d_event.h"
 #include "i_video.h"
-#include "i_sound.h"
-#include "z_zone.h"
-#include "s_sound.h"
-#include "sounds.h"
 #include "w_wad.h"
-#include "st_stuff.h"
 #include "lprintf.h"
 
 #include "i_system_e32.h"
@@ -82,7 +71,7 @@ void I_StartFrame (void)
 }
 
 
-boolean I_StartDisplay(void)
+bool I_StartDisplay(void)
 {
     unsigned short* backbuffer = I_GetBackBuffer();
 
@@ -156,7 +145,7 @@ void I_FinishUpdate (void)
         _g->newpal = NO_PALETTE_CHANGE;
 	}
 
-    I_FinishUpdate_e32(_g->screens[0].data, _g->current_pallete, SCREENWIDTH, SCREENHEIGHT);
+    I_FinishUpdate_e32((byte*)_g->screens[0].data, _g->current_pallete, SCREENWIDTH, SCREENHEIGHT);
 }
 
 //
@@ -182,7 +171,7 @@ void I_SetRes(void)
     _g->screens[0].width = SCREENWIDTH;
     _g->screens[0].height = SCREENHEIGHT;
 
-    lprintf(LO_INFO,"I_SetRes: Using resolution %dx%d", SCREENWIDTH, SCREENHEIGHT);
+    lprintf("I_SetRes: Using resolution %dx%d", SCREENWIDTH, SCREENHEIGHT);
 }
 
 void I_InitGraphics(void)
@@ -193,7 +182,7 @@ void I_InitGraphics(void)
     {
         firsttime = 0;
 
-        lprintf(LO_INFO, "I_InitGraphics: %dx%d", SCREENWIDTH, SCREENHEIGHT);
+        lprintf("I_InitGraphics: %dx%d", SCREENWIDTH, SCREENHEIGHT);
 
         /* Set the video mode */
         I_UpdateVideoMode();
@@ -207,9 +196,9 @@ void I_InitGraphics(void)
 
 void I_UpdateVideoMode(void)
 {
-    lprintf(LO_INFO, "I_SetRes: %dx%d", SCREENWIDTH, SCREENHEIGHT);
+    lprintf("I_SetRes: %dx%d", SCREENWIDTH, SCREENHEIGHT);
     I_SetRes();
 
-    lprintf(LO_INFO, "R_InitBuffer:");
+    lprintf("R_InitBuffer:");
     R_InitBuffer();
 }

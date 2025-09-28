@@ -31,12 +31,10 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#include "doomstat.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "s_sound.h"
 #include "sounds.h"
-#include "r_main.h"
 #include "dstrings.h"
 #include "lprintf.h"
 
@@ -58,7 +56,7 @@
 // jff 02/08/98 all cases with labels beginning with gen added to support
 // generalized line type behaviors.
 
-void T_VerticalDoor (vldoor_t* door)
+void T_VerticalDoor (vldoor_t* door, void*)
 {
   result_e  res;
 
@@ -363,7 +361,7 @@ int EV_DoDoor
     P_AddThinker (&door->thinker);
     sec->ceilingdata = door; //jff 2/22/98
 
-    door->thinker.function = T_VerticalDoor;
+    door->thinker.function = (think_t)T_VerticalDoor;
     door->sector = sec;
     door->type = type;
     door->topwait = VDOORWAIT;
@@ -514,7 +512,7 @@ int EV_VerticalDoor
     /* For old demos we have to emulate the old buggy behavior and
      * mess up non-T_VerticalDoor actions.
      */
-    if (door->thinker.function == T_VerticalDoor)
+    if (door->thinker.function == (think_t)T_VerticalDoor)
     {
       /* cph - we are writing outval to door->direction iff it is non-zero */
       signed int outval = 0;
@@ -523,7 +521,7 @@ int EV_VerticalDoor
        * monster is trying to open a closing door - so change direction
        * DEMOSYNC: we only read door->direction now if it really is a door.
        */
-      if (door->thinker.function == T_VerticalDoor && door->direction == -1) {
+      if (door->thinker.function == (think_t)T_VerticalDoor && door->direction == -1) {
         outval = 1; /* go back up */
       } else if (player) {
         outval = -1; /* go back down */
@@ -535,13 +533,13 @@ int EV_VerticalDoor
        *  being corrupted by this.
        */
       if (outval) {
-        if (door->thinker.function == T_VerticalDoor) {
+        if (door->thinker.function == (think_t)T_VerticalDoor) {
           door->direction = outval;
-        } else if (door->thinker.function == T_PlatRaise) {
+        } else if (door->thinker.function == (think_t)T_PlatRaise) {
           plat_t* p = (plat_t*)door;
           p->wait = outval;
         } else {
-          lprintf(LO_DEBUG, "EV_VerticalDoor: unknown thinker.function in thinker corruption emulation");
+          lprintf("EV_VerticalDoor: unknown thinker.function in thinker corruption emulation");
         }
 
         return 1;
@@ -571,7 +569,7 @@ int EV_VerticalDoor
   memset(door, 0, sizeof(*door));
   P_AddThinker (&door->thinker);
   sec->ceilingdata = door; //jff 2/22/98
-  door->thinker.function = T_VerticalDoor;
+  door->thinker.function = (think_t)T_VerticalDoor;
   door->sector = sec;
   door->direction = 1;
   door->speed = VDOORSPEED;
@@ -647,7 +645,7 @@ void P_SpawnDoorCloseIn30 (sector_t* sec)
   sec->ceilingdata = door; //jff 2/22/98
   sec->special = 0;
 
-  door->thinker.function = T_VerticalDoor;
+  door->thinker.function = (think_t)T_VerticalDoor;
   door->sector = sec;
   door->direction = 0;
   door->type = normal;
@@ -665,9 +663,7 @@ void P_SpawnDoorCloseIn30 (sector_t* sec)
 // Passed the sector of the door, whose type specified the door action
 // Returns nothing
 //
-void P_SpawnDoorRaiseIn5Mins
-( sector_t* sec,
-  int   secnum )
+void P_SpawnDoorRaiseIn5Mins( sector_t* sec)
 {
   vldoor_t* door;
 
@@ -679,7 +675,7 @@ void P_SpawnDoorRaiseIn5Mins
   sec->ceilingdata = door; //jff 2/22/98
   sec->special = 0;
 
-  door->thinker.function = T_VerticalDoor;
+  door->thinker.function = (think_t)T_VerticalDoor;
   door->sector = sec;
   door->direction = 2;
   door->type = raiseIn5Mins;

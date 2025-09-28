@@ -4,6 +4,13 @@
 
 #ifdef GBA
 
+// ********************************************************************
+// GBA save type
+// ********************************************************************
+// This is needed for emulators to know which save type the ROM is using.
+
+static volatile const char save_type[10] = "SRAM_V110";
+
 extern "C"
 {
     #include "doomdef.h"
@@ -58,8 +65,8 @@ void I_InitScreen_e32()
 {
     irqInit();
 
-    irqSet( IRQ_VBLANK, VBlankCallback );
-    irqEnable(IRQ_VBLANK);
+    //irqSet( IRQ_VBLANK, VBlankCallback );
+    //irqEnable(IRQ_VBLANK);
 
 
     //Set gamepak wait states and prefetch.
@@ -75,6 +82,11 @@ void I_InitScreen_e32()
 
     // cascade into tm3
     REG_TM3CNT_H = TM_CASCADE | TM_ENABLE;
+
+    //Set pallete for text mode.
+    unsigned short* pal_ram = (unsigned short*)0x5000000;
+    pal_ram[0] = RGB5(0,0,0);
+    pal_ram[241] = RGB5(31,0,0);
 }
 
 //**************************************************************************************

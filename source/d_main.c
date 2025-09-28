@@ -47,17 +47,13 @@
 #include "d_net.h"
 #include "dstrings.h"
 #include "sounds.h"
-#include "z_zone.h"
 #include "w_wad.h"
 #include "s_sound.h"
 #include "v_video.h"
 #include "f_finale.h"
 #include "f_wipe.h"
-#include "m_misc.h"
 #include "m_menu.h"
-#include "i_main.h"
 #include "i_system.h"
-#include "i_sound.h"
 #include "i_video.h"
 #include "g_game.h"
 #include "hu_stuff.h"
@@ -65,7 +61,6 @@
 #include "st_stuff.h"
 #include "am_map.h"
 #include "p_setup.h"
-#include "r_draw.h"
 #include "r_main.h"
 #include "d_main.h"
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
@@ -86,14 +81,14 @@ static void D_UpdateFPS(void);
 
 
 //jff 1/22/98 parms for disabling music and sound
-const boolean nosfxparm = false;
-const boolean nomusicparm = false;
+const bool nosfxparm = false;
+const bool nomusicparm = false;
 
 const skill_t startskill = sk_medium;
 const int startepisode = 1;
 const int startmap = 1;
 
-const boolean nodrawers = false;
+const bool nodrawers = false;
 
 static const char* timedemo = NULL;//"demo1";
 
@@ -108,20 +103,29 @@ static const char* timedemo = NULL;//"demo1";
 
 void D_PostEvent(event_t *ev)
 {
-    /* cph - suppress all input events at game start
-   * FIXME: This is a lousy kludge */
+    // Suppress all input events at game start
     if (_g->gametic < 3)
         return;
 
-    M_Responder(ev) ||
-            (_g->gamestate == GS_LEVEL && (
-                 C_Responder(ev) ||
-                 ST_Responder(ev) ||
-                 AM_Responder(ev)
-                 )
-             ) ||
-            G_Responder(ev);
+    // First, let the menu system try to handle the event
+    if (M_Responder(ev))
+        return;
 
+    // If we’re in a level, check console, status bar, and automap
+    if (_g->gamestate == GS_LEVEL)
+    {
+        if (C_Responder(ev))
+            return;
+
+        if (ST_Responder(ev))
+            return;
+
+        if (AM_Responder(ev))
+            return;
+    }
+
+    // Finally, pass it to the general game responder
+    G_Responder(ev);
 }
 
 //
@@ -133,7 +137,7 @@ void D_PostEvent(event_t *ev)
 
 static void D_Wipe(void)
 {
-    boolean done;
+    bool done;
     int wipestart = I_GetTime () - 1;
 
     wipe_initMelt();
@@ -164,8 +168,8 @@ static void D_Wipe(void)
 static void D_Display (void)
 {
 
-    boolean wipe;
-    boolean viewactive = false;
+    bool wipe;
+    bool viewactive = false;
 
     if (nodrawers)                    // for comparative timing / profiling
         return;
@@ -182,7 +186,7 @@ static void D_Display (void)
     if (_g->gamestate != GS_LEVEL) { // Not a level
         switch (_g->oldgamestate)
         {
-            case -1:
+            case GS_NOTHING:
             case GS_LEVEL:
                 V_SetPalette(0); // cph - use default (basic) palette
             default:
@@ -257,6 +261,8 @@ static void D_Display (void)
 
 static void D_DoomLoop(void)
 {
+    _g->fps_show = true;
+
     for (;;)
     {
         // frame syncronous IO operations
@@ -283,7 +289,7 @@ static void D_DoomLoop(void)
 
         // killough 3/16/98: change consoleplayer to displayplayer
         if (_g->player.mo) // cph 2002/08/10
-            S_UpdateSounds(_g->player.mo);// move positional sounds
+            S_UpdateSounds();// move positional sounds
 
         // Update display, next frame, with current state.
         D_Display();
@@ -347,7 +353,7 @@ static void D_PageDrawer(void)
 	#ifdef TITLEPIC_PWAD
     if (_g->pagelump)
     {
-        V_DrawNumPatch(0, 0, 0, _g->pagelump, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(0, 0, 0, _g->pagelump);
     }
 	#endif
 	#ifndef TITLEPIC_PWAD
@@ -498,7 +504,7 @@ void D_StartTitle (void)
 // the gamemode from it. Also note if DOOM II, whether secret levels exist
 // CPhipps - const char* for iwadname, made static
 
-static void CheckIWAD2(const unsigned char* iwad_data, const unsigned int iwad_len, GameMode_t *gmode,boolean *hassec)
+static void CheckIWAD2(const unsigned char* iwad_data, GameMode_t *gmode,bool *hassec)
 {
     const wadinfo_t* header = (const wadinfo_t*)iwad_data;
 
@@ -598,8 +604,8 @@ static void CheckIWAD2(const unsigned char* iwad_data, const unsigned int iwad_l
 
 static void IdentifyVersion()
 {
-    CheckIWAD2(doom_iwad, doom_iwad_len, &_g->gamemode, &_g->haswolflevels);
-	
+    CheckIWAD2(doom_iwad, &_g->gamemode, &_g->haswolflevels);
+
     /* jff 8/23/98 set gamemission global appropriately in all cases
      * cphipps 12/1999 - no version output here, leave that to the caller
      */
@@ -621,7 +627,7 @@ static void IdentifyVersion()
     if (_g->gamemode == indetermined)
     {
         //jff 9/3/98 use logical output routine
-        lprintf(LO_WARN,"Unknown Game Version, may not work\n");
+        lprintf("Unknown Game Version, may not work\n");
     }
 }
 
@@ -674,18 +680,18 @@ static void D_DoomMainSetup(void)
 
     /* cphipps - the main display. This shows the build date, copyright, and game type */
 
-    lprintf(LO_ALWAYS,"PrBoom (built %s)", version_date);
-    lprintf(LO_ALWAYS, "Playing: %s", doomverstr);
-    lprintf(LO_ALWAYS, "PrBoom is released under the");
-    lprintf(LO_ALWAYS, "GNU GPL v2.0.");
+    lprintf("PrBoom (built %s)", version_date);
+    lprintf("Playing: %s", doomverstr);
+    lprintf("PrBoom is released under the");
+    lprintf("GNU GPL v2.0.");
 
-    lprintf(LO_ALWAYS, "You are welcome to");
-    lprintf(LO_ALWAYS, "redistribute it under");
-    lprintf(LO_ALWAYS, "certain conditions.");
+    lprintf("You are welcome to");
+    lprintf("redistribute it under");
+    lprintf("certain conditions.");
 
-    lprintf(LO_ALWAYS, "It comes with ABSOLUTELY\nNO WARRANTY.\nSee the file COPYING for\ndetails.");
+    lprintf("It comes with ABSOLUTELY\nNO WARRANTY.\nSee the file COPYING for\ndetails.");
 
-    lprintf(LO_ALWAYS, "\nPhew. Thats the nasty legal\nstuff out of the way.\nLets play Doom!\n");
+    lprintf("\nPhew. Thats the nasty legal\nstuff out of the way.\nLets play Doom!\n");
 
 
 
@@ -696,38 +702,38 @@ static void D_DoomMainSetup(void)
 
     // CPhipps - move up netgame init
     //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"D_InitNetGame.");
+    lprintf("D_InitNetGame.");
     D_InitNetGame();
 
     //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"W_Init: Init WADfiles.");
+    lprintf("W_Init: Init WADfiles.");
     W_Init(); // CPhipps - handling of wadfiles init changed
 
     //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"M_Init: Init misc info.");
+    lprintf("M_Init: Init misc info.");
     M_Init();
 
     //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"R_Init: DOOM refresh daemon.");
+    lprintf("R_Init: DOOM refresh daemon.");
     R_Init();
 
     //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"P_Init: Init Playloop state.");
+    lprintf("P_Init: Init Playloop state.");
     P_Init();
 
     //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"S_Init: Setting up sound.");
+    lprintf("S_Init: Setting up sound.");
     S_Init(_g->snd_SfxVolume /* *8 */, _g->snd_MusicVolume /* *8*/ );
 
     //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"HU_Init: Setting up HUD.");
+    lprintf("HU_Init: Setting up HUD.");
     HU_Init();
 
     //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"ST_Init: Init status bar.");
+    lprintf("ST_Init: Init status bar.");
     ST_Init();
-    _g->highDetail = true;
-    lprintf(LO_INFO,"G_LoadSettings: Loading settings.");
+
+    lprintf("G_LoadSettings: Loading settings.");
     G_LoadSettings();
 
     _g->idmusnum = -1; //jff 3/17/98 insure idmus number is blank
@@ -769,13 +775,13 @@ void D_DoomMain(void)
 void GetFirstMap(int *ep, int *map)
 {
     int i,j; // used to generate map name
-    boolean done = false;  // Ty 09/13/98 - to exit inner loops
+    bool done = false;  // Ty 09/13/98 - to exit inner loops
     char test[6];  // MAPxx or ExMx plus terminator for testing
     char name[6];  // MAPxx or ExMx plus terminator for display
-    boolean newlevel = false;  // Ty 10/04/98 - to test for new level
+    bool newlevel = false;  // Ty 10/04/98 - to test for new level
     int ix;  // index for lookup
 
-    strcpy(name,""); // initialize
+    strcpy(name, ""); // initialize
     if (*map == 0) // unknown so go search for first changed one
     {
         *ep = 1;
@@ -812,7 +818,7 @@ void GetFirstMap(int *ep, int *map)
             }
         }
         //jff 9/3/98 use logical output routine
-        lprintf(LO_CONFIRM,"Auto-warping to first %slevel: %s\n",
+        lprintf("Auto-warping to first %slevel: %s\n",
                 newlevel ? "new " : "", name);  // Ty 10/04/98 - new level test
     }
 }

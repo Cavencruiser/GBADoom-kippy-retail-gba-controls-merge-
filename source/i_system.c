@@ -35,24 +35,17 @@
 
 
 #include <sys/stat.h>
-#include <errno.h>
-
-#include "doomtype.h"
+#include <stdio.h>
 #include "m_fixed.h"
 #include "i_system.h"
-#include "doomdef.h"
-#include "lprintf.h"
 
 #include "i_system.h"
-#include "i_system_e32.h"
-
-#include "global_data.h"
 
 
 /* cphipps - I_GetVersionString
  * Returns a version string in the given buffer 
  */
-const char* I_GetVersionString(char* buf, size_t sz)
+const char* I_GetVersionString(char* buf)
 {
     sprintf(buf,"GBADoom v%s",VERSION);
     return buf;

@@ -22,7 +22,6 @@
 //-----------------------------------------------------------------------------
 
 #include "z_zone.h"
-#include "doomdef.h"
 #include "doomtype.h"
 #include "lprintf.h"
 
@@ -43,7 +42,7 @@
 const unsigned int maxHeapSize = (256 * 1024);
 
 #ifndef GBA
-    static int running_count = 0;
+static int running_count = 0;
 #endif
 
 typedef struct memblock_s
@@ -84,12 +83,12 @@ void Z_Init (void)
 
     heapSize += 4;
 
-    lprintf(LO_INFO,"Z_Init: Heapsize is %d bytes.", heapSize);
+    lprintf("Z_Init: Heapsize is %d bytes.", heapSize);
 
     // set the entire zone to one free block
     mainzone->blocklist.next =
-    mainzone->blocklist.prev =
-    block = (memblock_t *)( (byte *)mainzone + sizeof(memzone_t) );
+            mainzone->blocklist.prev =
+            block = (memblock_t *)( (byte *)mainzone + sizeof(memzone_t) );
 
     mainzone->blocklist.user = (void *)mainzone;
     mainzone->blocklist.tag = PU_STATIC;
@@ -196,7 +195,7 @@ void* Z_Malloc(int size, int tag, void **user)
     base = mainzone->rover;
 
     if (!base->prev->user)
-    base = base->prev;
+        base = base->prev;
 
     rover = base;
     start = base->prev;

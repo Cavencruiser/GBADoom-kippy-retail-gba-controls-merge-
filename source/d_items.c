@@ -33,9 +33,7 @@
  */
 
 // We are referring to sprite numbers.
-#include "doomtype.h"
 #include "info.h"
-
 #include "d_items.h"
 
 

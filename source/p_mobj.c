@@ -32,7 +32,6 @@
  *-----------------------------------------------------------------------------*/
 
 #include "doomdef.h"
-#include "doomstat.h"
 #include "m_random.h"
 #include "r_main.h"
 #include "p_maputl.h"
@@ -44,7 +43,6 @@
 #include "s_sound.h"
 #include "info.h"
 #include "g_game.h"
-#include "p_inter.h"
 #include "lprintf.h"
 
 #include "global_data.h"
@@ -57,21 +55,21 @@
 //
 
 void P_ExplodeMissile (mobj_t* mo)
-  {
-  mo->momx = mo->momy = mo->momz = 0;
+{
+    mo->momx = mo->momy = mo->momz = 0;
 
-  P_SetMobjState (mo, mobjinfo[mo->type].deathstate);
+    P_SetMobjState (mo, mobjinfo[mo->type].deathstate);
 
-  mo->tics -= P_Random()&3;
+    mo->tics -= P_Random()&3;
 
-  if (mo->tics < 1)
-    mo->tics = 1;
+    if (mo->tics < 1)
+        mo->tics = 1;
 
-  mo->flags &= ~MF_MISSILE;
+    mo->flags &= ~MF_MISSILE;
 
-  if (mobjinfo[mo->type].deathsound)
-    S_StartSound (mo, mobjinfo[mo->type].deathsound);
-  }
+    if (mobjinfo[mo->type].deathsound)
+        S_StartSound (mo, mobjinfo[mo->type].deathsound);
+}
 
 
 //
@@ -283,30 +281,30 @@ void P_ZMovement (mobj_t* mo)
         P_MobjIsPlayer(mo)->deltaviewheight = (VIEWHEIGHT - P_MobjIsPlayer(mo)->viewheight)>>3;
     }
 
-  // adjust altitude
+    // adjust altitude
 
-  mo->z += mo->momz;
+    mo->z += mo->momz;
 
-  if ((mo->flags & MF_FLOAT) && mo->target)
+    if ((mo->flags & MF_FLOAT) && mo->target)
 
-    // float down towards target if too close
+        // float down towards target if too close
 
-    if (!((mo->flags ^ MF_FLOAT) & (MF_FLOAT | MF_SKULLFLY | MF_INFLOAT)) &&
-  mo->target)     /* killough 11/98: simplify */
-      {
-  fixed_t delta;
-  if (P_AproxDistance(mo->x - mo->target->x, mo->y - mo->target->y) <
-      D_abs(delta = mo->target->z + (mo->height>>1) - mo->z)*3)
-    mo->z += delta < 0 ? -FLOATSPEED : FLOATSPEED;
-      }
+        if (!((mo->flags ^ MF_FLOAT) & (MF_FLOAT | MF_SKULLFLY | MF_INFLOAT)) &&
+                mo->target)     /* killough 11/98: simplify */
+        {
+            fixed_t delta;
+            if (P_AproxDistance(mo->x - mo->target->x, mo->y - mo->target->y) <
+                    D_abs(delta = mo->target->z + (mo->height>>1) - mo->z)*3)
+                mo->z += delta < 0 ? -FLOATSPEED : FLOATSPEED;
+        }
 
-  // clip movement
+    // clip movement
 
-  if (mo->z <= mo->floorz)
+    if (mo->z <= mo->floorz)
     {
-    // hit the floor
+        // hit the floor
 
-    /* Note (id):
+        /* Note (id):
      *  somebody left this after the setting momz to 0,
      *  kinda useless there.
      * cph - This was the a bug in the linuxdoom-1.10 source which
@@ -315,75 +313,75 @@ void P_ZMovement (mobj_t* mo)
      *  demos would desync in close lost soul fights.
      * cph - revised 2001/04/15 -
      * This was a bug in the Doom/Doom 2 source; the following code
-     *  is meant to make charging lost souls bounce off of floors, but it 
+     *  is meant to make charging lost souls bounce off of floors, but it
      *  was incorrectly placed after momz was set to 0.
-     *  However, this bug was fixed in Doom95, Final/Ultimate Doom, and 
-     *  the v1.10 source release (which is one reason why it failed to sync 
+     *  However, this bug was fixed in Doom95, Final/Ultimate Doom, and
+     *  the v1.10 source release (which is one reason why it failed to sync
      *  some Doom2 v1.9 demos)
-     * I've added a comp_soul compatibility option to make this behavior 
-     *  selectable for PrBoom v2.3+. For older demos, we do this here only 
+     * I've added a comp_soul compatibility option to make this behavior
+     *  selectable for PrBoom v2.3+. For older demos, we do this here only
      *  if we're in a compatibility level above Doom 2 v1.9 (in which case we
      *  mimic the bug and do it further down instead)
      */
 
-    if (mo->flags & MF_SKULLFLY)
-      mo->momz = -mo->momz; // the skull slammed into something
+        if (mo->flags & MF_SKULLFLY)
+            mo->momz = -mo->momz; // the skull slammed into something
 
-    if (mo->momz < 0)
-      {
-    if (P_MobjIsPlayer(mo) && /* killough 5/12/98: exclude voodoo dolls */
-        P_MobjIsPlayer(mo)->mo == mo && mo->momz < -GRAVITY*8)
-      {
-        // Squat down.
-        // Decrease viewheight for a moment
-        // after hitting the ground (hard),
-        // and utter appropriate sound.
+        if (mo->momz < 0)
+        {
+            if (P_MobjIsPlayer(mo) && /* killough 5/12/98: exclude voodoo dolls */
+                    P_MobjIsPlayer(mo)->mo == mo && mo->momz < -GRAVITY*8)
+            {
+                // Squat down.
+                // Decrease viewheight for a moment
+                // after hitting the ground (hard),
+                // and utter appropriate sound.
 
-        P_MobjIsPlayer(mo)->deltaviewheight = mo->momz>>3;
-        if (mo->health > 0) /* cph - prevent "oof" when dead */
-    S_StartSound (mo, sfx_oof);
-      }
-  mo->momz = 0;
-      }
-    mo->z = mo->floorz;
+                P_MobjIsPlayer(mo)->deltaviewheight = mo->momz>>3;
+                if (mo->health > 0) /* cph - prevent "oof" when dead */
+                    S_StartSound (mo, sfx_oof);
+            }
+            mo->momz = 0;
+        }
+        mo->z = mo->floorz;
 
-    if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
-      {
-      P_ExplodeMissile (mo);
-      return;
-      }
+        if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
+        {
+            P_ExplodeMissile (mo);
+            return;
+        }
     }
-  else // still above the floor                                     // phares
-    if (!(mo->flags & MF_NOGRAVITY))
-      {
-  if (!mo->momz)
-    mo->momz = -GRAVITY;
-        mo->momz -= GRAVITY;
-      }
+    else // still above the floor                                     // phares
+        if (!(mo->flags & MF_NOGRAVITY))
+        {
+            if (!mo->momz)
+                mo->momz = -GRAVITY;
+            mo->momz -= GRAVITY;
+        }
 
-  if (mo->z + mo->height > mo->ceilingz)
+    if (mo->z + mo->height > mo->ceilingz)
     {
-    /* cph 2001/04/15 - 
+        /* cph 2001/04/15 -
      * Lost souls were meant to bounce off of ceilings;
      *  new comp_soul compatibility option added
      */
-    if (mo->flags & MF_SKULLFLY)
-      mo->momz = -mo->momz; // the skull slammed into something
+        if (mo->flags & MF_SKULLFLY)
+            mo->momz = -mo->momz; // the skull slammed into something
 
-    // hit the ceiling
+        // hit the ceiling
 
-    if (mo->momz > 0)
-      mo->momz = 0;
+        if (mo->momz > 0)
+            mo->momz = 0;
 
-    mo->z = mo->ceilingz - mo->height;
+        mo->z = mo->ceilingz - mo->height;
 
-    if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
-      {
-      P_ExplodeMissile (mo);
-      return;
-      }
+        if ( (mo->flags & MF_MISSILE) && !(mo->flags & MF_NOCLIP) )
+        {
+            P_ExplodeMissile (mo);
+            return;
+        }
     }
-  }
+}
 
 //
 // P_NightmareRespawn
@@ -472,7 +470,7 @@ void P_NightmareRespawn(mobj_t* mobj)
 //Thinker function for stuff that doesn't need to do anything
 //interesting.
 //Just cycles through the states. Allows sprite animation to work.
-void P_MobjBrainlessThinker(mobj_t* mobj)
+void P_MobjBrainlessThinker(mobj_t* mobj, void*)
 {
     // cycle through states,
     // calling action functions at transitions
@@ -494,11 +492,11 @@ static think_t P_ThinkerFunctionForType(mobjtype_t type, mobj_t* mobj)
 {
     //Full thinking ability.
     if(type < MT_MISC0)
-        return P_MobjThinker;
+        return (think_t)P_MobjThinker;
 
     //Just state cycles.
     if(mobj->tics != -1)
-        return P_MobjBrainlessThinker;
+        return (think_t)P_MobjBrainlessThinker;
 
     //No thinking at all.
     return NULL;
@@ -593,39 +591,39 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
 
 void P_RemoveMobj (mobj_t* mobj)
 {
-  P_UnsetThingPosition (mobj);
+    P_UnsetThingPosition (mobj);
 
-  // Delete all nodes on the current sector_list               phares 3/16/98
+    // Delete all nodes on the current sector_list               phares 3/16/98
 
-  if (_g->sector_list)
+    if (_g->sector_list)
     {
-    P_DelSeclist(_g->sector_list);
-    _g->sector_list = NULL;
+        P_DelSeclist(_g->sector_list);
+        _g->sector_list = NULL;
     }
 
-  // stop any playing sound
+    // stop any playing sound
 
-  S_StopSound (mobj);
+    S_StopSound (mobj);
 
-  // killough 11/98:
-  //
-  // Remove any references to other mobjs.
-  //
-  // Older demos might depend on the fields being left alone, however,
-  // if multiple thinkers reference each other indirectly before the
-  // end of the current tic.
-  // CPhipps - only leave dead references in old demos; I hope lxdoom_1 level
-  // demos are rare and don't rely on this. I hope.
+    // killough 11/98:
+    //
+    // Remove any references to other mobjs.
+    //
+    // Older demos might depend on the fields being left alone, however,
+    // if multiple thinkers reference each other indirectly before the
+    // end of the current tic.
+    // CPhipps - only leave dead references in old demos; I hope lxdoom_1 level
+    // demos are rare and don't rely on this. I hope.
 
-  if (!_g->demoplayback)
-  {
-    P_SetTarget(&mobj->target,    NULL);
-    P_SetTarget(&mobj->tracer,    NULL);
-    P_SetTarget(&mobj->lastenemy, NULL);
-  }
-  // free block
+    if (!_g->demoplayback)
+    {
+        P_SetTarget(&mobj->target,    NULL);
+        P_SetTarget(&mobj->tracer,    NULL);
+        P_SetTarget(&mobj->lastenemy, NULL);
+    }
+    // free block
 
-  P_RemoveThing (mobj);
+    P_RemoveThing (mobj);
 }
 
 
@@ -637,10 +635,10 @@ void P_RemoveMobj (mobj_t* mobj)
  * killough 8/24/98: rewrote to use hashing
  */
 
-static PUREFUNC int P_FindDoomedNum(unsigned int type)
+static PUREFUNC int P_FindDoomedNum(int type)
 {
     // find which type to spawn
-    for (int i=0 ; i< NUMMOBJTYPES ; i++)
+    for (unsigned int i=0 ; i< NUMMOBJTYPES ; i++)
     {
         if (type == mobjinfo[i].doomednum)
             return i;
@@ -654,8 +652,8 @@ static PUREFUNC int P_FindDoomedNum(unsigned int type)
 //
 
 void P_RespawnSpecials (void)
-  {
-  }
+{
+}
 
 //
 // P_SpawnPlayer
@@ -664,63 +662,63 @@ void P_RespawnSpecials (void)
 //  between levels.
 //
 
-void P_SpawnPlayer (int n, const mapthing_t* mthing)
-  {
-  player_t* p;
-  fixed_t   x;
-  fixed_t   y;
-  fixed_t   z;
-  mobj_t*   mobj;
+void P_SpawnPlayer (const mapthing_t* mthing)
+{
+    player_t* p;
+    fixed_t   x;
+    fixed_t   y;
+    fixed_t   z;
+    mobj_t*   mobj;
 
-  // not playing?
+    // not playing?
 
-  if (!_g->playeringame)
-    return;
+    if (!_g->playeringame)
+        return;
 
-  p = &_g->player;
+    p = &_g->player;
 
-  if (p->playerstate == PST_REBORN)
-    G_PlayerReborn (mthing->type-1);
+    if (p->playerstate == PST_REBORN)
+        G_PlayerReborn ();
 
-  /* cph 2001/08/14 - use the options field of memorised player starts to
+    /* cph 2001/08/14 - use the options field of memorised player starts to
    * indicate whether the start really exists in the level.
    */
-  if (!mthing->options)
-    I_Error("P_SpawnPlayer: attempt to spawn player at unavailable start point");
-  
-  x    = mthing->x << FRACBITS;
-  y    = mthing->y << FRACBITS;
-  z    = ONFLOORZ;
-  mobj = P_SpawnMobj (x,y,z, MT_PLAYER);
+    if (!mthing->options)
+        I_Error("P_SpawnPlayer: attempt to spawn player at unavailable start point");
 
-  // set color translations for player sprites
+    x    = mthing->x << FRACBITS;
+    y    = mthing->y << FRACBITS;
+    z    = ONFLOORZ;
+    mobj = P_SpawnMobj (x,y,z, MT_PLAYER);
 
-  mobj->angle      = ANG45 * (mthing->angle/45);
-  mobj->health     = p->health;
+    // set color translations for player sprites
 
-  p->mo            = mobj;
-  p->playerstate   = PST_LIVE;
-  p->refire        = 0;
-  p->message       = NULL;
-  p->damagecount   = 0;
-  p->bonuscount    = 0;
-  p->extralight    = 0;
-  p->fixedcolormap = 0;
-  p->viewheight    = VIEWHEIGHT;
+    mobj->angle      = ANG45 * (mthing->angle/45);
+    mobj->health     = p->health;
 
-  p->momx = p->momy = 0;   // killough 10/98: initialize bobbing to 0.
+    p->mo            = mobj;
+    p->playerstate   = PST_LIVE;
+    p->refire        = 0;
+    p->message       = NULL;
+    p->damagecount   = 0;
+    p->bonuscount    = 0;
+    p->extralight    = 0;
+    p->fixedcolormap = 0;
+    p->viewheight    = VIEWHEIGHT;
 
-  // setup gun psprite
+    p->momx = p->momy = 0;   // killough 10/98: initialize bobbing to 0.
 
-  P_SetupPsprites (p);
+    // setup gun psprite
+
+    P_SetupPsprites (p);
 
 
-  if (mthing->type-1 == 0)
+    if (mthing->type-1 == 0)
     {
-    ST_Start(); // wake up the status bar
-    HU_Start(); // wake up the heads up text
+        ST_Start(); // wake up the status bar
+        HU_Start(); // wake up the heads up text
     }
-  }
+}
 
 /*
  * P_IsDoomnumAllowed()
@@ -728,26 +726,26 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
  * if the thing in question is expected to be available in the gamemode used.
  */
 
-boolean P_IsDoomnumAllowed(int doomnum)
+bool P_IsDoomnumAllowed(int doomnum)
 {
-  // Do not spawn cool, new monsters if !commercial
-  if (_g->gamemode != commercial)
-    switch(doomnum)
-      {
-      case 64:  // Archvile
-      case 65:  // Former Human Commando
-      case 66:  // Revenant
-      case 67:  // Mancubus
-      case 68:  // Arachnotron
-      case 69:  // Hell Knight
-      case 71:  // Pain Elemental
-      case 84:  // Wolf SS
-      case 88:  // Boss Brain
-      case 89:  // Boss Shooter
-        return false;
-      }
+    // Do not spawn cool, new monsters if !commercial
+    if (_g->gamemode != commercial)
+        switch(doomnum)
+        {
+        case 64:  // Archvile
+        case 65:  // Former Human Commando
+        case 66:  // Revenant
+        case 67:  // Mancubus
+        case 68:  // Arachnotron
+        case 69:  // Hell Knight
+        case 71:  // Pain Elemental
+        case 84:  // Wolf SS
+        case 88:  // Boss Brain
+        case 89:  // Boss Shooter
+            return false;
+        }
 
-  return true;
+    return true;
 }
 
 //
@@ -770,12 +768,12 @@ void P_SpawnMapThing (const mapthing_t* mthing)
 
     switch(mthing->type)
     {
-        case 0:
-        case DEN_PLAYER5:
-        case DEN_PLAYER6:
-        case DEN_PLAYER7:
-        case DEN_PLAYER8:
-            return;
+    case 0:
+    case DEN_PLAYER5:
+    case DEN_PLAYER6:
+    case DEN_PLAYER7:
+    case DEN_PLAYER8:
+        return;
     }
 
     // killough 11/98: clear flags unused by Doom
@@ -788,7 +786,7 @@ void P_SpawnMapThing (const mapthing_t* mthing)
 
     if (options & MTF_RESERVED)
     {
-        lprintf(LO_WARN, "P_SpawnMapThing: correcting bad flags (%u) (thing type %d)\n",
+        lprintf("P_SpawnMapThing: correcting bad flags (%u) (thing type %d)\n",
                 options, mthing->type);
         options &= MTF_EASY|MTF_NORMAL|MTF_HARD|MTF_AMBUSH|MTF_NOTSINGLE;
     }
@@ -800,7 +798,7 @@ void P_SpawnMapThing (const mapthing_t* mthing)
     {
         _g->playerstarts[0] = *mthing;
         _g->playerstarts[0].options = 1;
-        P_SpawnPlayer (0, &_g->playerstarts[0]);
+        P_SpawnPlayer (&_g->playerstarts[0]);
         return;
     }
 
@@ -869,47 +867,47 @@ void P_SpawnMapThing (const mapthing_t* mthing)
 // P_SpawnPuff
 //
 void P_SpawnPuff(fixed_t x,fixed_t y,fixed_t z)
-  {
-  mobj_t* th;
-  // killough 5/5/98: remove dependence on order of evaluation:
-  int t = P_Random();
-  z += (t - P_Random())<<10;
+{
+    mobj_t* th;
+    // killough 5/5/98: remove dependence on order of evaluation:
+    int t = P_Random();
+    z += (t - P_Random())<<10;
 
-  th = P_SpawnMobj (x,y,z, MT_PUFF);
-  th->momz = FRACUNIT;
-  th->tics -= P_Random()&3;
+    th = P_SpawnMobj (x,y,z, MT_PUFF);
+    th->momz = FRACUNIT;
+    th->tics -= P_Random()&3;
 
-  if (th->tics < 1)
-    th->tics = 1;
+    if (th->tics < 1)
+        th->tics = 1;
 
-  // don't make punches spark on the wall
+    // don't make punches spark on the wall
 
-  if (_g->attackrange == MELEERANGE)
-    P_SetMobjState (th, S_PUFF3);
-  }
+    if (_g->attackrange == MELEERANGE)
+        P_SetMobjState (th, S_PUFF3);
+}
 
 
 //
 // P_SpawnBlood
 //
 void P_SpawnBlood(fixed_t x,fixed_t y,fixed_t z,int damage)
-  {
-  mobj_t* th;
-  // killough 5/5/98: remove dependence on order of evaluation:
-  int t = P_Random();
-  z += (t - P_Random())<<10;
-  th = P_SpawnMobj(x,y,z, MT_BLOOD);
-  th->momz = FRACUNIT*2;
-  th->tics -= P_Random()&3;
+{
+    mobj_t* th;
+    // killough 5/5/98: remove dependence on order of evaluation:
+    int t = P_Random();
+    z += (t - P_Random())<<10;
+    th = P_SpawnMobj(x,y,z, MT_BLOOD);
+    th->momz = FRACUNIT*2;
+    th->tics -= P_Random()&3;
 
-  if (th->tics < 1)
-    th->tics = 1;
+    if (th->tics < 1)
+        th->tics = 1;
 
-  if (damage <= 12 && damage >= 9)
-    P_SetMobjState (th,S_BLOOD2);
-  else if (damage < 9)
-    P_SetMobjState (th,S_BLOOD3);
-  }
+    if (damage <= 12 && damage >= 9)
+        P_SetMobjState (th,S_BLOOD2);
+    else if (damage < 9)
+        P_SetMobjState (th,S_BLOOD3);
+}
 
 
 //
@@ -919,27 +917,27 @@ void P_SpawnBlood(fixed_t x,fixed_t y,fixed_t z,int damage)
 //
 
 void P_CheckMissileSpawn (mobj_t* th)
-  {
-  th->tics -= P_Random()&3;
-  if (th->tics < 1)
-    th->tics = 1;
+{
+    th->tics -= P_Random()&3;
+    if (th->tics < 1)
+        th->tics = 1;
 
-  // move a little forward so an angle can
-  // be computed if it immediately explodes
+    // move a little forward so an angle can
+    // be computed if it immediately explodes
 
-  th->x += (th->momx>>1);
-  th->y += (th->momy>>1);
-  th->z += (th->momz>>1);
+    th->x += (th->momx>>1);
+    th->y += (th->momy>>1);
+    th->z += (th->momz>>1);
 
-  // killough 8/12/98: for non-missile objects (e.g. grenades)
-  if (!(th->flags & MF_MISSILE))
-    return;
+    // killough 8/12/98: for non-missile objects (e.g. grenades)
+    if (!(th->flags & MF_MISSILE))
+        return;
 
-  // killough 3/15/98: no dropoff (really = don't care for missiles)
+    // killough 3/15/98: no dropoff (really = don't care for missiles)
 
-  if (!P_TryMove (th, th->x, th->y, false))
-    P_ExplodeMissile (th);
-  }
+    if (!P_TryMove (th, th->x, th->y, false))
+        P_ExplodeMissile (th);
+}
 
 
 //
@@ -947,43 +945,43 @@ void P_CheckMissileSpawn (mobj_t* th)
 //
 
 mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
-  {
-  mobj_t* th;
-  angle_t an;
-  int     dist;
+{
+    mobj_t* th;
+    angle_t an;
+    int     dist;
 
-  th = P_SpawnMobj (source->x,source->y,source->z + 4*8*FRACUNIT,type);
+    th = P_SpawnMobj (source->x,source->y,source->z + 4*8*FRACUNIT,type);
 
-  if (mobjinfo[th->type].seesound)
-    S_StartSound (th, mobjinfo[th->type].seesound);
+    if (mobjinfo[th->type].seesound)
+        S_StartSound (th, mobjinfo[th->type].seesound);
 
-  P_SetTarget(&th->target, source);    // where it came from
-  an = R_PointToAngle2 (source->x, source->y, dest->x, dest->y);
+    P_SetTarget(&th->target, source);    // where it came from
+    an = R_PointToAngle2 (source->x, source->y, dest->x, dest->y);
 
-  // fuzzy player
+    // fuzzy player
 
-  if (dest->flags & MF_SHADOW)
+    if (dest->flags & MF_SHADOW)
     {  // killough 5/5/98: remove dependence on order of evaluation:
-    int t = P_Random();
-    an += (t - P_Random())<<20;
+        int t = P_Random();
+        an += (t - P_Random())<<20;
     }
 
-  th->angle = an;
-  an >>= ANGLETOFINESHIFT;
-  th->momx = FixedMul (mobjinfo[th->type].speed, finecosine[an]);
-  th->momy = FixedMul (mobjinfo[th->type].speed, finesine[an]);
+    th->angle = an;
+    an >>= ANGLETOFINESHIFT;
+    th->momx = FixedMul (mobjinfo[th->type].speed, finecosine[an]);
+    th->momy = FixedMul (mobjinfo[th->type].speed, finesine[an]);
 
-  dist = P_AproxDistance (dest->x - source->x, dest->y - source->y);
-  dist = dist / mobjinfo[th->type].speed;
+    dist = P_AproxDistance (dest->x - source->x, dest->y - source->y);
+    dist = dist / mobjinfo[th->type].speed;
 
-  if (dist < 1)
-    dist = 1;
+    if (dist < 1)
+        dist = 1;
 
-  th->momz = (dest->z - source->z) / dist;
-  P_CheckMissileSpawn (th);
+    th->momz = (dest->z - source->z) / dist;
+    P_CheckMissileSpawn (th);
 
-  return th;
-  }
+    return th;
+}
 
 
 //
@@ -993,48 +991,48 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
 
 void P_SpawnPlayerMissile(mobj_t* source,mobjtype_t type)
 {
-  mobj_t *th;
-  fixed_t x, y, z, slope = 0;
+    mobj_t *th;
+    fixed_t x, y, z, slope = 0;
 
-  // see which target is to be aimed at
+    // see which target is to be aimed at
 
-  angle_t an = source->angle;
+    angle_t an = source->angle;
 
-  // killough 7/19/98: autoaiming was not in original beta
+    // killough 7/19/98: autoaiming was not in original beta
     {
-      // killough 8/2/98: prefer autoaiming at enemies
-      unsigned int mask = MF_FRIEND;
+        // killough 8/2/98: prefer autoaiming at enemies
+        unsigned int mask = MF_FRIEND;
 
-      do
-  {
-    slope = P_AimLineAttack(source, an, 16*64*FRACUNIT, mask);
-    if (!_g->linetarget)
-      slope = P_AimLineAttack(source, an += 1<<26, 16*64*FRACUNIT, mask);
-    if (!_g->linetarget)
-      slope = P_AimLineAttack(source, an -= 2<<26, 16*64*FRACUNIT, mask);
-    if (!_g->linetarget)
-      an = source->angle, slope = 0;
-  }
-      while (mask && (mask=0, !_g->linetarget));  // killough 8/2/98
+        do
+        {
+            slope = P_AimLineAttack(source, an, 16*64*FRACUNIT, mask);
+            if (!_g->linetarget)
+                slope = P_AimLineAttack(source, an += 1<<26, 16*64*FRACUNIT, mask);
+            if (!_g->linetarget)
+                slope = P_AimLineAttack(source, an -= 2<<26, 16*64*FRACUNIT, mask);
+            if (!_g->linetarget)
+                an = source->angle, slope = 0;
+        }
+        while (mask && (mask=0, !_g->linetarget));  // killough 8/2/98
     }
 
-  x = source->x;
-  y = source->y;
-  z = source->z + 4*8*FRACUNIT;
+    x = source->x;
+    y = source->y;
+    z = source->z + 4*8*FRACUNIT;
 
-  th = P_SpawnMobj (x,y,z, type);
+    th = P_SpawnMobj (x,y,z, type);
 
-  if (mobjinfo[th->type].seesound)
-    S_StartSound (th, mobjinfo[th->type].seesound);
+    if (mobjinfo[th->type].seesound)
+        S_StartSound (th, mobjinfo[th->type].seesound);
 
-  P_SetTarget(&th->target, source);
-  th->angle = an;
-  th->momx = FixedMul(mobjinfo[th->type].speed,finecosine[an>>ANGLETOFINESHIFT]);
-  th->momy = FixedMul(mobjinfo[th->type].speed,finesine[an>>ANGLETOFINESHIFT]);
-  th->momz = FixedMul(mobjinfo[th->type].speed,slope);
+    P_SetTarget(&th->target, source);
+    th->angle = an;
+    th->momx = FixedMul(mobjinfo[th->type].speed,finecosine[an>>ANGLETOFINESHIFT]);
+    th->momy = FixedMul(mobjinfo[th->type].speed,finesine[an>>ANGLETOFINESHIFT]);
+    th->momz = FixedMul(mobjinfo[th->type].speed,slope);
 
-  P_CheckMissileSpawn(th);
-  }
+    P_CheckMissileSpawn(th);
+}
 
 struct player_s* P_MobjIsPlayer(const mobj_t* mobj)
 {

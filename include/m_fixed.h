@@ -56,12 +56,11 @@ typedef int fixed_t;
  * killough 9/05/98: better code seems to be gotten from using inlined C
  */
 
-inline static int CONSTFUNC D_abs(fixed_t x)
+inline static int CONSTFUNC D_abs(const fixed_t x)
 {
-  fixed_t _t = (x),_s;
-  _s = _t >> (8*sizeof _t-1);
-  return (_t^_s)-_s;
+    return (x < 0) ? -x : x;
 }
+
 
 /*
  * Fixed Point Multiplication
@@ -111,7 +110,7 @@ inline static fixed_t CONSTFUNC FixedDiv(fixed_t a, fixed_t b)
  * (notice that the C standard for % does not guarantee this)
  */
 
-inline static fixed_t CONSTFUNC FixedMod(fixed_t a, fixed_t b)
+inline static fixed_t CONSTFUNC FixedMod(const fixed_t a, const fixed_t b)
 {
     if(!a)
         return 0;
@@ -126,26 +125,20 @@ inline static fixed_t CONSTFUNC FixedMod(fixed_t a, fixed_t b)
 }
 
 //Approx Reciprocal of v
-inline static CONSTFUNC fixed_t FixedReciprocal(fixed_t v)
+inline static CONSTFUNC fixed_t FixedReciprocal(const fixed_t v)
 {
     unsigned int val = v < 0 ? -v : v;
 
-    unsigned int shift = 0;
+    const unsigned int shift = shiftTable[val >> FRACBITS];
 
-    while(val > (1 << FRACBITS))
-    {
-        val = (val >> 1u);
-        shift++;
-    }
-
-    fixed_t result = (reciprocalTable[val] >> shift);
+    const fixed_t result = (reciprocalTable[val >> shift] >> shift);
 
     return v < 0 ? -result : result;
 }
 
 
 //Approx fixed point divide of a/b using reciprocal. -> a * (1/b).
-inline static CONSTFUNC fixed_t FixedApproxDiv(fixed_t a, fixed_t b)
+inline static CONSTFUNC fixed_t FixedApproxDiv(const fixed_t a, const fixed_t b)
 {
     return FixedMul(a, FixedReciprocal(b));
 }

@@ -35,7 +35,6 @@
 #include "doomstat.h"
 #include "d_event.h"
 #include "v_video.h"
-#include "w_wad.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "f_finale.h" // CPhipps - hmm...
@@ -59,7 +58,7 @@
 
 void    F_StartCast (void);
 void    F_CastTicker (void);
-boolean F_CastResponder (event_t *ev);
+bool F_CastResponder (event_t *ev);
 void    F_CastDrawer (void);
 
 void WI_checkForAccelerate(void);    // killough 3/28/98: used to
@@ -173,7 +172,7 @@ void F_StartFinale (void)
 
 
 
-boolean F_Responder (event_t *event)
+bool F_Responder (event_t *event)
 {
     if (_g->finalestage == 2)
         return F_CastResponder (event);
@@ -461,7 +460,7 @@ stopattack:
 // F_CastResponder
 //
 
-boolean F_CastResponder (event_t* ev)
+bool F_CastResponder (event_t* ev)
 {
     if (ev->type != ev_keydown)
         return false;
@@ -542,11 +541,10 @@ void F_CastDrawer (void)
     spritedef_t*        sprdef;
     spriteframe_t*      sprframe;
     int                 lump;
-    boolean             flip;
 
     // erase the entire screen to a background
     // CPhipps - patch drawing updated
-    V_DrawNamePatch(0,0,0, "BOSSBACK", CR_DEFAULT, VPT_STRETCH); // Ty 03/30/98 bg texture extern
+    V_DrawNamePatch(0,0,0, "BOSSBACK"); // Ty 03/30/98 bg texture extern
 
     F_CastPrint ((castorder[_g->castnum].name));
 
@@ -555,11 +553,8 @@ void F_CastDrawer (void)
     sprframe = &sprdef->spriteframes[ _g->caststate->frame & FF_FRAMEMASK];
     lump = sprframe->lump[0];
 
-    flip = (boolean)SPR_FLIPPED(sprframe, 0);
-
     // CPhipps - patch drawing updated
-    V_DrawNumPatch(160, 170, 0, lump+_g->firstspritelump, CR_DEFAULT,
-                   VPT_STRETCH | (flip ? VPT_FLIP : 0));
+    V_DrawNumPatch(160, 170, 0, lump+_g->firstspritelump);
 }
 
 //
@@ -577,16 +572,16 @@ static void F_BunnyScroll (void)
         int scrolled = 320 - (_g->finalecount-230)/2;
         if (scrolled <= 0)
         {
-            V_DrawNamePatch(0, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(0, 0, 0, pfub2);
         }
         else if (scrolled >= 320)
         {
-            V_DrawNamePatch(0, 0, 0, pfub1, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(0, 0, 0, pfub1);
         }
         else
         {
-            V_DrawNamePatch(320-scrolled, 0, 0, pfub1, CR_DEFAULT, VPT_STRETCH);
-            V_DrawNamePatch(-scrolled, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(320-scrolled, 0, 0, pfub1);
+            V_DrawNamePatch(-scrolled, 0, 0, pfub2);
         }
     }
 
@@ -595,7 +590,7 @@ static void F_BunnyScroll (void)
     if (_g->finalecount < 1180)
     {
         // CPhipps - patch drawing updated
-        V_DrawNamePatch((320-13*8)/2, (200-8*8)/2,0, "END0", CR_DEFAULT, VPT_STRETCH);
+        V_DrawNamePatch((320-13*8)/2, (200-8*8)/2,0, "END0");
         _g->laststage = 0;
         return;
     }
@@ -611,7 +606,7 @@ static void F_BunnyScroll (void)
 
     sprintf (name,"END%i",stage);
     // CPhipps - patch drawing updated
-    V_DrawNamePatch((320-13*8)/2, (200-8*8)/2, 0, name, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch((320-13*8)/2, (200-8*8)/2, 0, name);
 }
 
 
@@ -635,18 +630,18 @@ void F_Drawer (void)
         // CPhipps - patch drawing updated
         case 1:
             if ( _g->gamemode == retail )
-                V_DrawNamePatch(0, 0, 0, "CREDIT", CR_DEFAULT, VPT_STRETCH);
+                V_DrawNamePatch(0, 0, 0, "CREDIT");
             else
-                V_DrawNamePatch(0, 0, 0, "HELP2", CR_DEFAULT, VPT_STRETCH);
+                V_DrawNamePatch(0, 0, 0, "HELP2");
             break;
         case 2:
-            V_DrawNamePatch(0, 0, 0, "VICTORY2", CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(0, 0, 0, "VICTORY2");
             break;
         case 3:
             F_BunnyScroll ();
             break;
         case 4:
-            V_DrawNamePatch(0, 0, 0, "ENDPIC", CR_DEFAULT, VPT_STRETCH);
+            V_DrawNamePatch(0, 0, 0, "ENDPIC");
             break;
         }
     }

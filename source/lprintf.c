@@ -37,32 +37,26 @@
 #include "config.h"
 #endif
 
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdarg.h>
 
-#include "doomtype.h"
 #include "lprintf.h"
-#include "i_main.h"
 
 /* cphipps - enlarged message buffer and made non-static
  * We still have to be careful here, this function can be called after exit
  */
 #define MAX_MESSAGE_SIZE 128
 
-int lprintf(OutputLevels pri, const char *s, ...)
+int lprintf(const char *s, ...)
 {
-	char msg[MAX_MESSAGE_SIZE];
+    char msg[MAX_MESSAGE_SIZE];
 
-	va_list v;
-	va_start(v,s);
-	
-	vsprintf(msg,s,v);
-	
-	va_end(v);
+    va_list v;
+    va_start(v,s);
 
-    int len = strlen(msg);
+    vsprintf(msg,s,v);
+
+    va_end(v);
 
     printf("%s\n", msg);
 
