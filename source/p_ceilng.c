@@ -35,6 +35,7 @@
 #include "p_tick.h"
 #include "s_sound.h"
 #include "sounds.h"
+#include "lprintf.h"
 
 #include "global_data.h"
 
@@ -427,6 +428,10 @@ void P_AddActiveCeiling(ceiling_t* ceiling)
             return;
         }
     }
+
+#ifdef RANGECHECK
+    I_Error("Active Ceiling overflow.");
+#endif
 }
 
 //
