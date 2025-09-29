@@ -295,7 +295,7 @@ int	prndindex;
 //******************************************************************************
 
 // the list of ceilings moving currently, including crushers
-ceilinglist_t *activeceilings;
+ceiling_t *activeceilings[MAXCEILINGS];
 
 //******************************************************************************
 //p_enemy.c
@@ -429,7 +429,7 @@ intercept_t* intercept_p;
 //p_plats.c
 //******************************************************************************
 
-platlist_t *activeplats;       // killough 2/14/98: made global again
+plat_t *activeplats[MAXPLATS];       // killough 2/14/98: made global again
 
 
 //******************************************************************************

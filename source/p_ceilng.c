@@ -35,6 +35,7 @@
 #include "p_tick.h"
 #include "s_sound.h"
 #include "sounds.h"
+#include "lprintf.h"
 
 #include "global_data.h"
 
@@ -366,21 +367,20 @@ int EV_DoCeiling
 //jff 4/5/98 return if activated
 int P_ActivateInStasisCeiling(const line_t *line)
 {
-  ceilinglist_t *cl;
-  int rtn=0;
+    int rtn = 0;
 
-  for (cl=_g->activeceilings; cl; cl=cl->next)
-  {
-    ceiling_t *ceiling = cl->ceiling;
-    if (ceiling->tag == line->tag && ceiling->direction == 0)
+    for (int i = 0; i < MAXCEILINGS; i++)
     {
-      ceiling->direction = ceiling->olddirection;
-      ceiling->thinker.function = (think_t)T_MoveCeiling;
-      //jff 4/5/98 return if activated
-      rtn=1;
+        if (_g->activeceilings[i] && _g->activeceilings[i]->tag == line->tag && _g->activeceilings[i]->direction == 0)
+        {
+            _g->activeceilings[i]->direction = _g->activeceilings[i]->olddirection;
+            _g->activeceilings[i]->thinker.function = (think_t)T_MoveCeiling;
+
+            rtn = 1;
+        }
     }
-  }
-  return rtn;
+
+    return rtn;
 }
 
 //
@@ -393,20 +393,20 @@ int P_ActivateInStasisCeiling(const line_t *line)
 //
 int EV_CeilingCrushStop(const line_t* line)
 {
-    int rtn=0;
+    int rtn = 0;
 
-    ceilinglist_t *cl;
-    for (cl=_g->activeceilings; cl; cl=cl->next)
+    for (int i = 0; i < MAXCEILINGS; i++)
     {
-        ceiling_t *ceiling = cl->ceiling;
-        if (ceiling->direction != 0 && ceiling->tag == line->tag)
+        if(_g->activeceilings[i] && _g->activeceilings[i]->direction != 0 && _g->activeceilings[i]->tag == line->tag)
         {
-            ceiling->olddirection = ceiling->direction;
-            ceiling->direction = 0;
-            ceiling->thinker.function = NULL;
-            rtn=1;
+            _g->activeceilings[i]->olddirection = _g->activeceilings[i]->direction;
+            _g->activeceilings[i]->direction = 0;
+            _g->activeceilings[i]->thinker.function = NULL;
+
+            rtn = 1;
         }
     }
+
     return rtn;
 }
 
@@ -420,16 +420,18 @@ int EV_CeilingCrushStop(const line_t* line)
 //
 void P_AddActiveCeiling(ceiling_t* ceiling)
 {
-    ceilinglist_t *list = Z_Malloc(sizeof *list, PU_LEVEL, NULL);
+    for (int i = 0; i < MAXCEILINGS; i++)
+    {
+        if(_g->activeceilings[i] == NULL)
+        {
+            _g->activeceilings[i] = ceiling;
+            return;
+        }
+    }
 
-    list->ceiling = ceiling;
-    ceiling->list = list;
-
-    if ((list->next = _g->activeceilings))
-        list->next->prev = &list->next;
-
-    list->prev = &_g->activeceilings;
-    _g->activeceilings = list;
+#ifdef RANGECHECK
+    I_Error("Active Ceiling overflow.");
+#endif
 }
 
 //
@@ -442,16 +444,16 @@ void P_AddActiveCeiling(ceiling_t* ceiling)
 //
 void P_RemoveActiveCeiling(ceiling_t* ceiling)
 {
-    ceilinglist_t *list = ceiling->list;
+    for (int i = 0; i < MAXCEILINGS; i++)
+    {
+        if(_g->activeceilings[i] == ceiling)
+        {
+            ceiling->sector->ceilingdata = NULL;  //jff 2/22/98
+            P_RemoveThinker(&ceiling->thinker);
 
-    ceiling->sector->ceilingdata = NULL;  //jff 2/22/98
-
-    P_RemoveThinker(&ceiling->thinker);
-
-    if ((*list->prev = list->next))
-        list->next->prev = list->prev;
-
-    Z_Free(list);
+            return;
+        }
+    }
 }
 
 //
@@ -463,10 +465,6 @@ void P_RemoveActiveCeiling(ceiling_t* ceiling)
 //
 void P_RemoveAllActiveCeilings(void)
 {
-    while (_g->activeceilings)
-    {
-        ceilinglist_t *next = _g->activeceilings->next;
-        Z_Free(_g->activeceilings);
-        _g->activeceilings = next;
-    }
+    for (int i = 0; i < MAXCEILINGS; i++)
+        _g->activeceilings[i] = NULL;
 }

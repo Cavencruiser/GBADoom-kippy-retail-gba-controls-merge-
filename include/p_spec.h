@@ -49,6 +49,8 @@
 #define CEILSPEED   FRACUNIT
 #define CEILWAIT    150
 
+#define MAXCEILINGS 32
+
 // p_doors
 
 #define VDOORSPEED  (FRACUNIT*2)
@@ -58,6 +60,8 @@
 
 #define PLATWAIT    3
 #define PLATSPEED   FRACUNIT
+
+#define MAXPLATS 32
 
 // p_switch
 
@@ -604,16 +608,7 @@ typedef struct
   bool crush;
   int tag;
   plattype_e type;
-
-  struct platlist *list;   // killough
 } plat_t;
-
-// New limit-free plat structure -- killough
-
-typedef struct platlist {
-  plat_t *plat;
-  struct platlist *next,**prev;
-} platlist_t;
 
 // p_ceilng
 
@@ -665,13 +660,7 @@ typedef struct
   // ID
   int tag;
   int olddirection;
-  struct ceilinglist *list;   // jff 2/22/98 copied from killough's plats
 } ceiling_t;
-
-typedef struct ceilinglist {
-  ceiling_t *ceiling;
-  struct ceilinglist *next,**prev;
-} ceilinglist_t;
 
 // p_floor
 
