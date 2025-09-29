@@ -874,7 +874,6 @@ static const texture_t* R_GetOrLoadTexture(int tex_num)
 
 static void R_RenderMaskedSegRange(const drawseg_t *ds, int x1, int x2)
 {
-    int      texnum;
     draw_column_vars_t dcvars;
 
     R_SetDefaultDrawColumnVars(&dcvars);
@@ -888,8 +887,7 @@ static void R_RenderMaskedSegRange(const drawseg_t *ds, int x1, int x2)
     frontsector = SG_FRONTSECTOR(curline);
     backsector = SG_BACKSECTOR(curline);
 
-    texnum = _g->sides[curline->sidenum].midtexture;
-    texnum = texturetranslation[texnum];
+    const int texnum = texturetranslation[_g->sides[curline->sidenum].midtexture];
 
     // killough 4/13/98: get correct lightlevel for 2s normal textures
     rw_lightlevel = frontsector->lightlevel;
@@ -1060,32 +1058,23 @@ static void R_DrawSprite (const vissprite_t* spr)
 
 static void R_DrawPSprite (pspdef_t *psp, int lightlevel)
 {
-    int           x1, x2;
-    spritedef_t   *sprdef;
-    spriteframe_t *sprframe;
-    bool       flip;
-    vissprite_t   *vis;
-    vissprite_t   avis;
     int           width;
     fixed_t       topoffset;
 
     // decide which patch to use
-    sprdef = &_g->sprites[psp->state->sprite];
-
-    sprframe = &sprdef->spriteframes[psp->state->frame & FF_FRAMEMASK];
-
-    flip = (bool) SPR_FLIPPED(sprframe, 0);
+    const spritedef_t* sprdef = &_g->sprites[psp->state->sprite];
+    const spriteframe_t* sprframe = &sprdef->spriteframes[psp->state->frame & FF_FRAMEMASK];
 
     const patch_t* patch = W_CacheLumpNum(sprframe->lump[0]+_g->firstspritelump);
+
     // calculate edges of the shape
-    fixed_t       tx;
-    tx = psp->sx-160*FRACUNIT;
+    fixed_t tx = psp->sx-160*FRACUNIT;
 
     tx -= patch->leftoffset<<FRACBITS;
-    x1 = (centerxfrac + FixedMul (tx, pspritescale))>>FRACBITS;
+    int x1 = (centerxfrac + FixedMul (tx, pspritescale))>>FRACBITS;
 
     tx += patch->width<<FRACBITS;
-    x2 = ((centerxfrac + FixedMul (tx, pspritescale) ) >>FRACBITS) - 1;
+    int x2 = ((centerxfrac + FixedMul (tx, pspritescale) ) >>FRACBITS) - 1;
 
     width = patch->width;
     topoffset = patch->topoffset<<FRACBITS;
@@ -1097,43 +1086,43 @@ static void R_DrawPSprite (pspdef_t *psp, int lightlevel)
         return;
 
     // store information in a vissprite
-    vis = &avis;
-    vis->mobjflags = 0;
-    // killough 12/98: fix psprite positioning problem
-    vis->texturemid = (BASEYCENTER<<FRACBITS) /* +  FRACUNIT/2 */ -
-            (psp->sy-topoffset);
-    vis->x1 = x1 < 0 ? 0 : x1;
-    vis->x2 = x2 >= SCREENWIDTH ? SCREENWIDTH-1 : x2;
+    vissprite_t vis;
+    vis.mobjflags = 0;
+    vis.texturemid = (BASEYCENTER<<FRACBITS) - (psp->sy-topoffset);
+    vis.x1 = max(x1, 0);
+    vis.x2 = min(x2, SCREENWIDTH-1);
     // proff 11/06/98: Added for high-res
-    vis->scale = pspriteyscale;
-    vis->iscale = pspriteyiscale;
+    vis.scale = pspriteyscale;
+    vis.iscale = pspriteyiscale;
+
+    const bool flip = (bool) SPR_FLIPPED(sprframe, 0);
 
     if (flip)
     {
-        vis->xiscale = - pspriteiscale;
-        vis->startfrac = ((width<<FRACBITS)-1);
+        vis.xiscale = - pspriteiscale;
+        vis.startfrac = ((width<<FRACBITS)-1);
     }
     else
     {
-        vis->xiscale = pspriteiscale;
-        vis->startfrac = 0;
+        vis.xiscale = pspriteiscale;
+        vis.startfrac = 0;
     }
 
-    if (vis->x1 > x1)
-        vis->startfrac += vis->xiscale*(vis->x1-x1);
+    if (vis.x1 > x1)
+        vis.startfrac += vis.xiscale*(vis.x1-x1);
 
-    vis->patch = patch;
+    vis.patch = patch;
 
     if (_g->player.powers[pw_invisibility] > 4*32 || _g->player.powers[pw_invisibility] & 8)
-        vis->colormap = NULL;                    // shadow draw
+        vis.colormap = NULL;                    // shadow draw
     else if (fixedcolormap)
-        vis->colormap = fixedcolormap;           // fixed color
+        vis.colormap = fixedcolormap;           // fixed color
     else if (psp->state->frame & FF_FULLBRIGHT)
-        vis->colormap = fullcolormap;            // full bright // killough 3/20/98
+        vis.colormap = fullcolormap;            // full bright // killough 3/20/98
     else
-        vis->colormap = R_LoadColorMap(lightlevel);  // local light
+        vis.colormap = R_LoadColorMap(lightlevel);  // local light
 
-    R_DrawVisSprite(vis);
+    R_DrawVisSprite(&vis);
 }
 
 
@@ -1506,7 +1495,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     const int x2 = (xr >> FRACBITS);
 
     // store information in a vissprite
-    vissprite_t* vis = R_NewVisSprite ();
+    vissprite_t* vis = R_NewVisSprite();
 
     //No more vissprites.
     if(!vis)
@@ -1521,8 +1510,8 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     vis->gy = fy;
     vis->gz = fz;
     vis->texturemid = (fz + (patch->topoffset << FRACBITS)) - viewz;
-    vis->x1 = x1 < 0 ? 0 : x1;
-    vis->x2 = x2 >= SCREENWIDTH ? SCREENWIDTH-1 : x2;
+    vis->x1 = max(x1, 0);
+    vis->x2 = min(x2, SCREENWIDTH-1);
 
     const fixed_t iscale = FixedReciprocal(xscale);
 
@@ -1609,22 +1598,17 @@ static visplane_t *new_visplane(unsigned hash)
 
 static visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel)
 {
-    visplane_t *check;
-    unsigned hash;                      // killough
-
     if (picnum == _g->skyflatnum)
         height = lightlevel = 0;         // killough 7/19/98: most skies map together
 
     // New visplane algorithm uses hash table -- killough
-    hash = visplane_hash(picnum,lightlevel,height);
+    const unsigned int hash = visplane_hash(picnum,lightlevel,height);
 
-    for (check=_g->visplanes[hash]; check; check=check->next)  // killough
-        if (height == check->height &&
-                picnum == check->picnum &&
-                lightlevel == check->lightlevel)
+    for (visplane_t* check=_g->visplanes[hash]; check; check=check->next)  // killough
+        if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel)
             return check;
 
-    check = new_visplane(hash);         // killough
+    visplane_t *check = new_visplane(hash);         // killough
 
     check->height = height;
     check->picnum = picnum;
@@ -1636,8 +1620,6 @@ static visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel)
     for(int i = 0; i < SCREENWIDTH; i++)
       check->limits[i].top = 0xff;
 
-    //BlockSet(check->limits, 0x00ff00ff, SCREENWIDTH << 1);
-
     return check;
 }
 
@@ -1648,7 +1630,7 @@ static visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel)
  */
 static visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
 {
-    unsigned hash = visplane_hash(pl->picnum, pl->lightlevel, pl->height);
+    const unsigned int hash = visplane_hash(pl->picnum, pl->lightlevel, pl->height);
     visplane_t *new_pl = new_visplane(hash);
 
     new_pl->height = pl->height;
@@ -1658,11 +1640,8 @@ static visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
     new_pl->maxx = stop;
     new_pl->modified = false;
 
-
     for(int i = 0; i < SCREENWIDTH; i++)
       new_pl->limits[i].top = 0xff;
-
-    //BlockSet(new_pl->limits, 0x00ff00ff, SCREENWIDTH << 1);
 
     return new_pl;
 }
@@ -1688,10 +1667,12 @@ static visplane_t *R_CheckPlane(visplane_t *pl, int start, int stop)
     for (x=intrl ; x <= intrh && pl->limits[x].top == 0xff; x++) // dropoff overflow
         ;
 
-    if (x > intrh) { /* Can use existing plane; extend range */
+    if (x > intrh)
+    {
         pl->minx = unionl; pl->maxx = unionh;
         return pl;
-    } else /* Cannot use existing plane; create a new one */
+    }
+    else
         return R_DupPlane(pl,start,stop);
 }
 
