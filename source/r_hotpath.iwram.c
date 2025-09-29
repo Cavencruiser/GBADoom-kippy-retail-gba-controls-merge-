@@ -1396,7 +1396,7 @@ static inline fixed_t R_ScaleFromGlobalAngle(angle_t visangle)
     if (den <= (num >> 16))
         return 64 * FRACUNIT;
 
-    fixed_t scale = FixedDiv(num, den);
+    const fixed_t scale = FixedDiv(num, den);
 
     return clamp(256, scale, 64 * FRACUNIT);
 }
