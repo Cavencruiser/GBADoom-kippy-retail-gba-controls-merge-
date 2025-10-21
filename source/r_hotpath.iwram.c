@@ -493,7 +493,7 @@ static const lighttable_t* R_ColourMap(int lightlevel)
                 lightlevel += 1 << LIGHTSEGSHIFT;
         }
 
-        lightlevel += (extralight +_g->gamma) << LIGHTSEGSHIFT;
+        lightlevel += (extralight) << LIGHTSEGSHIFT;
 
         int cm = ((256-lightlevel)>>2) - 24;
 

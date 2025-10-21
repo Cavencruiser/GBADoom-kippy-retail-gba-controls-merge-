@@ -49,7 +49,7 @@ CFLAGS	:=	-g -Wall -O3 -fgcse-after-reload -gdwarf-4\
                 -fallow-store-data-races\
                 -DGBA\
 		$(ARCH)
-
+CFLAGS	+=  -fpermissive
 CFLAGS	+=	$(INCLUDE)
 
 CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
