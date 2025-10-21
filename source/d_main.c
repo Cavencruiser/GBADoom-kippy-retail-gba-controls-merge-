@@ -262,6 +262,7 @@ static void D_Display (void)
 static void D_DoomLoop(void)
 {
 
+
     for (;;)
     {
         // frame syncronous IO operations
