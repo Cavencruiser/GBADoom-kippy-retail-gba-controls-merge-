@@ -3168,14 +3168,14 @@ boolean P_SetMobjState(mobj_t* mobj, statenum_t state)
         {
             if(!(_g->player.cheats & CF_ENEMY_ROCKETS))
             {
-                st->action(mobj);
+                st->action(mobj, NULL);
             }
             else
             {
                 if(mobjinfo[mobj->type].missilestate && (state >= mobjinfo[mobj->type].missilestate) && (state < mobjinfo[mobj->type].painstate))
-                    A_CyberAttack(mobj);
+                    A_CyberAttack(mobj, NULL);
                 else
-                    st->action(mobj);
+                    st->action(mobj, NULL);
             }
         }
 
